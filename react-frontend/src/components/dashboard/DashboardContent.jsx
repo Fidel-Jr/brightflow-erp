@@ -12,7 +12,7 @@ const DashboardContent = () => {
       <Container fluid>
         {/* Welcome Header */}
         <div className="mb-4">
-          <h3 className="fw-bold mb-1">Good morning, Fidel-Jr! 👋</h3>
+          <h3 className="fw-bold mb-1">Good morning, Jon-Jr! 👋</h3>
           <p className="text-muted mb-0">Here's what's happening with your projects today.</p>
         </div>
 

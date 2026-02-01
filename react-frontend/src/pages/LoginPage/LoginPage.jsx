@@ -78,6 +78,7 @@ const LoginPage = () => {
             Sign In
           </button>
         </form>
+        
 
         <div className="forgot-password">
           <a href="#forgot">Forgot password?</a>
