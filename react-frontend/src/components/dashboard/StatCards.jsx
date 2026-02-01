@@ -1,0 +1,74 @@
+import React from 'react';
+import { Row, Col, Card } from 'react-bootstrap';
+
+const StatCards = () => {
+  const stats = [
+    {
+      title: 'Total Revenue',
+      value: '$127,500',
+      icon: 'bi-currency-dollar',
+      gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      trend: 'up',
+      trendValue: '+12.5%'
+    },
+    {
+      title: 'Low Stock',
+      value: '132',
+      icon: 'bi-exclamation-triangle',
+      gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+      trend: 'up',
+      trendValue: '+8.2%'
+    },
+    {
+      title: 'Total Orders',
+      value: '1,248',
+      icon: 'bi-cart',
+      gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+      trend: 'down',
+      trendValue: '-3.1%'
+    },
+    {
+      title: 'Deliveries Pending',
+      value: '12',
+      icon: 'bi-truck',
+      gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+      trend: 'up',
+      trendValue: '+18.4%'
+    }
+  ];
+
+  return (
+    <Row className="g-3 mb-4">
+      {stats.map((stat, index) => (
+        <Col xs={12} sm={6} lg={3} key={index}>
+          <Card className="border-0 shadow-sm h-100 stat-card-hover">
+            <Card.Body className="p-4">
+              <div className="d-flex justify-content-between align-items-start mb-3">
+                <div 
+                  className="rounded-3 p-3 d-flex align-items-center justify-content-center"
+                  style={{ 
+                    background: stat.gradient,
+                    width: '56px',
+                    height: '56px'
+                  }}
+                >
+                  <i className={`${stat.icon} text-white fs-4`}></i>
+                </div>
+                <div className="text-end">
+                  <span className={`badge bg-${stat.trend === 'up' ? 'success' : 'danger'} bg-opacity-10 text-${stat.trend === 'up' ? 'success' : 'danger'} px-2 py-1`}>
+                    <i className={`bi bi-arrow-${stat.trend} me-1`}></i>
+                    {stat.trendValue}
+                  </span>
+                </div>
+              </div>
+              <p className="text-muted small mb-1 text-uppercase fw-semibold">{stat.title}</p>
+              <h3 className="fw-bold mb-0">{stat.value}</h3>
+            </Card.Body>
+          </Card>
+        </Col>
+      ))}
+    </Row>
+  );
+};
+
+export default StatCards;
