@@ -1,0 +1,132 @@
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Minimal scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Sidebar modern style */
+.sidebar-modern {
+  font-size: 0.9rem;
+}
+
+.sidebar-transition {
+  transition: all 0.3s ease-in-out;
+}
+
+.sidebar-link {
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.sidebar-modern .nav-link.sidebar-link:hover {
+  background-color: #fff !important;
+  color: #667eea !important;
+}
+
+
+/* Search expansion animation */
+.search-container {
+  transition: width 0.3s ease-in-out;
+}
+
+.search-container.expanded {
+  animation: expandSearch 0.3s ease-in-out;
+}
+
+@keyframes expandSearch {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: 300px;
+    opacity: 1;
+  }
+}
+
+/* Remove Bootstrap default button styles */
+.btn-link:focus,
+.btn-link:active {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Remove dropdown caret */
+.dropdown-toggle::after {
+  display: none !important;
+}
+
+/* Smooth nav transitions */
+.nav-link {
+  transition: color 0.2s ease;
+}
+
+.sidebar-modern .nav-link.sidebar-link:hover i {
+  color: #667eea !important;
+}
+
+/* Badge positioning */
+.badge {
+  padding: 2px 5px;
+}
+
+/* Card hover effects for future content */
+.card {
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ... previous styles ... */
+
+/* Stat card hover effect */
+.stat-card-hover {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.stat-card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Table styling improvements */
+.table > :not(caption) > * > * {
+  padding: 1rem 0.75rem;
+}
+
+/* Progress bar animations */
+.progress-bar {
+  transition: width 0.6s ease;
+}
+
+/* Badge improvements */
+.badge {
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
