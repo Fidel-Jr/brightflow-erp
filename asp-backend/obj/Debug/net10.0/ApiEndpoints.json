@@ -33,16 +33,6 @@
   },
   {
     "ContainingType": "asp_backend.Controllers.UserController",
-    "Method": "Dashboard",
-    "RelativePath": "api/User/dashboard",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "asp_backend.Controllers.UserController",
     "Method": "GetCurrentUser",
     "RelativePath": "api/User/me",
     "HttpMethod": "GET",

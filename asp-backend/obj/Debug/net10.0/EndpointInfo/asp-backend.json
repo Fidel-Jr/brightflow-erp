@@ -79,18 +79,6 @@
         }
       }
     },
-    "/api/User/dashboard": {
-      "get": {
-        "tags": [
-          "User"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/WeatherForecast": {
       "get": {
         "tags": [

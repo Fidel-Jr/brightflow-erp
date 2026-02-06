@@ -13,6 +13,7 @@ namespace asp_backend.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
+        
 
     }
 }
