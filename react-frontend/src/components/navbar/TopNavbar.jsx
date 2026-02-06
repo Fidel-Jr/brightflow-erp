@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Navbar, Form, InputGroup, Dropdown } from 'react-bootstrap';
+import { useAuth } from '../../context/AuthContext.jsx';
 
 const TopNavbar = ({ setShowSidebar, sidebarCollapsed, setSidebarCollapsed }) => {
   const [searchExpanded, setSearchExpanded] = useState(false);
+  const { logout } = useAuth();
 
   // Custom toggle component without caret
   const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
@@ -17,6 +19,10 @@ const TopNavbar = ({ setShowSidebar, sidebarCollapsed, setSidebarCollapsed }) =>
       {children}
     </div>
   ));
+
+  const handleLogout = () => {
+    logout();
+  }
 
   return (
     <Navbar bg="white" className="px-4 py-3" style={{ borderBottom: '1px solid #e9ecef' }}>
@@ -115,8 +121,11 @@ const TopNavbar = ({ setShowSidebar, sidebarCollapsed, setSidebarCollapsed }) =>
                 <i className="bi bi-gear me-2"></i>Settings
               </Dropdown.Item>
               <Dropdown.Divider />
-              <Dropdown.Item className="text-danger">
-                <i className="bi bi-box-arrow-right me-2"></i>Logout
+              <Dropdown.Item 
+                className="text-danger d-flex align-items-center" 
+                onClick={handleLogout}>
+                <i className="bi bi-box-arrow-right me-2"></i>
+                Logout
               </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
