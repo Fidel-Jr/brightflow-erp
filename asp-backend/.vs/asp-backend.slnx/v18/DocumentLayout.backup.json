@@ -3,20 +3,24 @@
   "WorkspaceRootPath": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\services\\jwtservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:services\\jwtservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,7 +30,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 7,
+          "SelectedChildIndex": 11,
           "Children": [
             {
               "$type": "Bookmark",
@@ -58,13 +62,26 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
+              "Title": "UserController.cs",
+              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Controllers\\UserController.cs",
+              "RelativeDocumentMoniker": "Controllers\\UserController.cs",
+              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Controllers\\UserController.cs",
+              "RelativeToolTip": "Controllers\\UserController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-06T12:44:04.298Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "AuthController.cs",
               "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Controllers\\AuthController.cs",
               "RelativeDocumentMoniker": "Controllers\\AuthController.cs",
               "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Controllers\\AuthController.cs",
               "RelativeToolTip": "Controllers\\AuthController.cs",
-              "ViewState": "AgIAAAwAAAAAAAAAAAAAAAwAAAATAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFcAAABBAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-02-06T12:39:03.866Z",
               "EditorCaption": ""
@@ -77,14 +94,14 @@
               "RelativeDocumentMoniker": "Services\\JwtService.cs",
               "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Services\\JwtService.cs",
               "RelativeToolTip": "Services\\JwtService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAdAAAAAAAAAA==",
+              "ViewState": "AgIAABIAAAAAAAAAAAAAACIAAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-02-06T12:37:34.059Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "appsettings.json",
               "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\appsettings.json",
               "RelativeDocumentMoniker": "appsettings.json",
@@ -92,18 +109,17 @@
               "RelativeToolTip": "appsettings.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-02-06T12:37:12.737Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-06T12:37:12.737Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 0,
               "Title": "Program.cs",
               "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAACQAAAAAAAAAAAAAACsAAAAdAAAAAAAAAA==",
+              "ViewState": "AgIAACEAAAAAAAAAAAAAADMAAAALAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-02-06T12:35:37.77Z",
               "EditorCaption": ""
