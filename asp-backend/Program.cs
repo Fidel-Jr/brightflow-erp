@@ -45,8 +45,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     builder.Services.AddAuthorization(options =>
     {
         options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
-        options.AddPolicy("WarehouseStaffOnly", policy => policy.RequireRole("WStaff"));
-        options.AddPolicy("DeliveryStaffOnly", policy => policy.RequireRole("DStaff"));
+        options.AddPolicy("WarehouseStaffOnly", policy => policy.RequireRole("Warehouse Staff"));
+        options.AddPolicy("DeliveryStaffOnly", policy => policy.RequireRole("Delivery Staff"));
     });
 
     // CORS
