@@ -1,3 +1,3 @@
 import api from "./axios";
 
-export const getCurrentUser = () => api.get("/user/me");
+export const getCurrentUser = () => api.get("/users/me");
