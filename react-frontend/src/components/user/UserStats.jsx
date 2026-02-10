@@ -2,32 +2,41 @@ import React from 'react';
 import { Row, Col, Card } from 'react-bootstrap';
 
 const UserStats = ({ users }) => {
+  const safeUsers = users.map(u => ({
+    ...u,
+    roles: Array.isArray(u.roles) ? u.roles : []
+  }));
   const stats = [
     {
       label: 'Total Users',
-      value: users.length,
+      value: safeUsers.length,
       icon: 'bi-people',
       gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
     },
     {
       label: 'Active Users',
-      value: users.filter(u => u.status === 'Active').length,
+      value: safeUsers.filter(u => u.status === 'Active').length,
       icon: 'bi-check-circle',
       gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
     },
     {
       label: 'Admins',
-      value: users.filter(u => u.role === 'Admin').length,
+      value: safeUsers.filter(u => u.roles.includes('Admin')).length,
       icon: 'bi-shield-check',
       gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
     },
     {
       label: 'Staff',
-      value: 2,
+      value: safeUsers.filter(u =>
+        u.roles.some(r =>
+          ['Warehouse Staff', 'Delivery Staff'].includes(r)
+        )
+      ).length,
       icon: 'bi-people',
       gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
     }
   ];
+
 
   return (
     <Row className="g-3 mb-4">

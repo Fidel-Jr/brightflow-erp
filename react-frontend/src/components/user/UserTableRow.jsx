@@ -1,10 +1,13 @@
 import React from 'react';
 import { Form, Badge, Dropdown } from 'react-bootstrap';
+import { formatSmartDateTime, formatRelativeTime } from '../../helper/formatPrettyDateTime';
 
-const UserTableRow = ({ user, onEdit, onDelete }) => {
+const UserTableRow = ({ user, index, onEdit, onDelete }) => {
   const getStatusColor = (status) => {
     return status === 'Active' ? 'success' : 'secondary';
   };
+
+  const roles = Array.isArray(user.roles) ? user.roles : [];
 
   const getRoleColor = (role) => {
     const colors = {
@@ -36,22 +39,28 @@ const UserTableRow = ({ user, onEdit, onDelete }) => {
             {user.avatar}
           </div>
           <div>
-            <div className="fw-semibold">{user.name}</div>
-            <small className="text-muted">ID: {user.id}</small>
+            <div className="fw-semibold">{user.username}</div>
+            <small className="text-muted">#{index + 1}</small>
           </div>
         </div>
       </td>
       <td className="align-middle">{user.email}</td>
       <td className="align-middle">
-        <Badge 
-          bg={getRoleColor(user.role)} 
-          className="bg-opacity-10 px-3 py-2"
-        >
-          <span className={`text-${getRoleColor(user.role)}`}>
-            {user.role}
-          </span>
-        </Badge>
+        <div className="d-flex flex-wrap gap-2">
+          {roles.map((role, index) => (
+            <Badge
+              key={index}
+              bg={getRoleColor(role)}
+              className="bg-opacity-10 px-3 py-2"
+            >
+              <span className={`text-${getRoleColor(role)}`}>
+                {role}
+              </span>
+            </Badge>
+          ))}
+        </div>
       </td>
+
       <td className="align-middle">
         <Badge 
           bg={getStatusColor(user.status)} 
@@ -62,7 +71,20 @@ const UserTableRow = ({ user, onEdit, onDelete }) => {
           </span>
         </Badge>
       </td>
-      <td className="align-middle text-muted">{user.lastLogin}</td>
+      <td className="align-middle text-muted">
+  {user.lastLoginAt ? (
+    <>
+      {formatRelativeTime(user.lastLoginAt) && (
+        <span className="fw-semibold">
+          {formatRelativeTime(user.lastLoginAt)} ·{' '}
+        </span>
+      )}
+      {formatSmartDateTime(user.lastLoginAt)}
+    </>
+  ) : (
+    'Never'
+  )}
+</td>
       <td className="align-middle">
         <Dropdown>
           <Dropdown.Toggle 

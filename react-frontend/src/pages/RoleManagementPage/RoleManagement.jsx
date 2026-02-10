@@ -5,6 +5,7 @@ import TopNavbar from '../../components/navbar/TopNavbar';
 import RoleStats from '../../components/role/RoleStats';
 import RoleGrid from '../../components/role/RoleGrid';
 import RoleModal from '../../components/role/RoleModal';
+import { getRoles } from '../../api/role-api';
 
 const RoleManagementPage = () => {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -12,6 +13,21 @@ const RoleManagementPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState('add');
   const [selectedRole, setSelectedRole] = useState(null);
+
+  // ✅ Fetch roles here
+    useEffect(() => {
+      const fetchRoles = async () => {
+        try {
+          const response = await getRoles();
+          console.log('Fetched roles:', response.data);
+          // setRoles(response.data);
+        } catch (err) {
+          console.error('Failed to fetch roles', err);
+        }
+      };
+  
+      fetchRoles();
+    }, []);
 
   const [roles, setRoles] = useState([
     {

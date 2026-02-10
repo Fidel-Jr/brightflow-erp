@@ -77,7 +77,7 @@ const RoleModal = ({
       <Form onSubmit={handleSubmit}>
         <Modal.Body className="p-4">
           <Row className="g-3 mb-4 align-items-center">
-            <Col md={8}>
+            <Col md={12}>
               <Form.Group>
                 <Form.Label className="fw-semibold">Role Name</Form.Label>
                 <Form.Control
@@ -90,7 +90,7 @@ const RoleModal = ({
               </Form.Group>
             </Col>
 
-            <Col md={4}>
+            {/* <Col md={4}>
               <Form.Group>
                 <Form.Label className="fw-semibold">Color</Form.Label>
                 <Form.Select
@@ -105,7 +105,7 @@ const RoleModal = ({
                   <option value="secondary">Gray</option>
                 </Form.Select>
               </Form.Group>
-            </Col>
+            </Col> */}
 
             <Col md={12}>
               <Form.Group>

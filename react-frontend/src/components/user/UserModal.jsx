@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Form, Button, Row, Col } from 'react-bootstrap';
+import { createUser } from '../../api/user-api';
 
 const UserModal = ({ show, mode, user, onHide, onSubmit }) => {
   const roles = ['Admin', 'Manager', 'Warehouse Staff', 'Delivery Staff'];
 
   const [formData, setFormData] = useState({
-    name: '',
+    username: '',
     email: '',
-    role: '',
+    roles: [],
     status: 'Active',
     password: ''
   });
@@ -15,24 +16,24 @@ const UserModal = ({ show, mode, user, onHide, onSubmit }) => {
   useEffect(() => {
     if (mode === 'edit' && user) {
       setFormData({
-        name: user.name,
+        username: user.username,
         email: user.email,
-        role: user.role,
+        roles: user.roles || [],
         status: user.status,
         password: ''
       });
     } else {
       setFormData({
-        name: '',
+        username: '',
         email: '',
-        role: '',
+        roles: [],
         status: 'Active',
         password: ''
       });
     }
   }, [mode, user, show]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     onSubmit(formData);
   };
@@ -53,8 +54,8 @@ const UserModal = ({ show, mode, user, onHide, onSubmit }) => {
                 <Form.Control
                   type="text"
                   placeholder="Enter username"
-                  value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  value={formData.username}
+                  onChange={(e) => setFormData({...formData, username: e.target.value})}
                   required
                 />
               </Form.Group>
@@ -75,17 +76,27 @@ const UserModal = ({ show, mode, user, onHide, onSubmit }) => {
 
             <Col md={6}>
               <Form.Group>
-                <Form.Label className="fw-semibold">Role</Form.Label>
-                <Form.Select
-                  value={formData.role}
-                  onChange={(e) => setFormData({...formData, role: e.target.value})}
-                  required
-                >
-                  <option value="">Select role</option>
-                  {roles.map(role => (
-                    <option key={role} value={role}>{role}</option>
-                  ))}
-                </Form.Select>
+                <Form.Label className="fw-semibold">Roles</Form.Label>
+                <div className="d-flex flex-wrap gap-2">
+                  {roles.map((role) => {
+                    const isSelected = formData.roles.includes(role);
+                    return (
+                      <Button
+                        key={role}
+                        variant={isSelected ? "primary" : "outline-secondary"}
+                        size="sm"
+                        onClick={() => {
+                          const updatedRoles = isSelected
+                            ? formData.roles.filter(r => r !== role)
+                            : [...formData.roles, role];
+                          setFormData({ ...formData, roles: updatedRoles });
+                        }}
+                      >
+                        {role}
+                      </Button>
+                    );
+                  })}
+                </div>
               </Form.Group>
             </Col>
 
