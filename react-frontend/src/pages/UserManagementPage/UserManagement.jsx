@@ -7,13 +7,15 @@ import UserStats from '../../components/user/UserStats';
 import UserFilters from '../../components/user/UserFilters';
 import UserTable from '../../components/user/UserTable';
 import UserModal from '../../components/user/UserModal';
-import { getUsers } from '../../api/user-api';
+import UserDetailsModal from '../../components/user/UserDetailsModal';
+import { getUsers, deleteUser } from '../../api/user-api';
 
 const UserManagement = () => {
   const [showSidebar, setShowSidebar] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const [showModal, setShowModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [modalMode, setModalMode] = useState('add');
   const [selectedUser, setSelectedUser] = useState(null);
 
@@ -29,6 +31,11 @@ const UserManagement = () => {
 
   
     // Fetch users from API (or use mock)
+    const handleViewDetails = (user) => {
+      setSelectedUser(user);
+      setShowDetailsModal(true);
+    };
+
 
     const fetchUsers = async () => {
       try {
@@ -38,11 +45,7 @@ const UserManagement = () => {
         console.error('Failed to fetch users', err);
         // fallback mock data
         setUsers([
-          { id:1, username:'John Doe', email:'john@example.com', role:'Admin', roles:['Admin'], status:'Active', avatar:'JD', lastLogin:'2 hours ago'},
-          { id:2, username:'Sarah Anderson', email:'sarah@example.com', role:'Manager', roles:['Manager'], status:'Active', avatar:'SA', lastLogin:'1 day ago'},
-          { id:3, username:'Mike Johnson', email:'mike@example.com', role:'Warehouse Staff', roles:['Warehouse Staff'], status:'Inactive', avatar:'MJ', lastLogin:'5 days ago'},
-          { id:4, username:'Emily Wilson', email:'emily@example.com', role:'Delivery Staff', roles:['Delivery Staff'], status:'Active', avatar:'EW', lastLogin:'5 hours ago'},
-          { id:5, username:'David Brown', email:'david@example.com', role:'Admin', roles:['Admin'], status:'Active', avatar:'DB', lastLogin:'1 hour ago'}
+          
         ]);
       }
     };
@@ -50,7 +53,6 @@ const UserManagement = () => {
     useEffect(() => {
       fetchUsers();
     }, []);
-
    
 
   // Filter users based on search & role
@@ -92,6 +94,7 @@ const UserManagement = () => {
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedUser(null);
+    
   };
   const handleSubmit = (formData) => {
     if (modalMode === 'add') {
@@ -116,8 +119,17 @@ const UserManagement = () => {
     handleCloseModal();
   };
 
-  const handleDelete = (userId) => {
+  const handleDelete = async (userId) => {
+
     if (window.confirm('Are you sure you want to delete this user?')) {
+      try {
+        await deleteUser(userId); // API call to delete user
+        console.log('User deleted successfully');
+      } catch (error) {
+        console.error('Error deleting user:', error);
+        alert('Failed to delete user. Please try again.');
+        return;
+      }
       setUsers(users.filter(u => u.id !== userId));
     }
   };
@@ -167,6 +179,7 @@ const UserManagement = () => {
               setPageSize={setPageSize}
               onEdit={(user) => handleOpenModal('edit', user)}
               onDelete={handleDelete}
+              onViewDetails={handleViewDetails}
             />
           </Container>
         </main>
@@ -179,6 +192,14 @@ const UserManagement = () => {
         user={selectedUser}
         onHide={handleCloseModal}
         onSubmit={handleSubmit}
+        onSuccess={fetchUsers}
+      />
+
+      {/* Details Modal */}
+      <UserDetailsModal
+        show={showDetailsModal}
+        user={selectedUser}
+        onHide={() => setShowDetailsModal(false)}
       />
     </div>
   );

@@ -2,7 +2,7 @@ import React from 'react';
 import { Form, Badge, Dropdown } from 'react-bootstrap';
 import { formatSmartDateTime, formatRelativeTime } from '../../helper/formatPrettyDateTime';
 
-const UserTableRow = ({ user, index, onEdit, onDelete }) => {
+const UserTableRow = ({ user, index, onEdit, onDelete, onViewDetails }) => {
   const getStatusColor = (status) => {
     return status === 'Active' ? 'success' : 'secondary';
   };
@@ -98,7 +98,7 @@ const UserTableRow = ({ user, index, onEdit, onDelete }) => {
               <i className="bi bi-pencil me-2"></i>
               Edit
             </Dropdown.Item>
-            <Dropdown.Item>
+            <Dropdown.Item onClick={() => onViewDetails(user)}>
               <i className="bi bi-eye me-2"></i>
               View Details
             </Dropdown.Item>
