@@ -51,6 +51,15 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
       });
   };
+  useEffect(() => {
+    const handleLogout = () => {
+      setUser(null);
+      setToken(null);
+    };
+
+    window.addEventListener("logout", handleLogout);
+    return () => window.removeEventListener("logout", handleLogout);
+  }, []);
 
   const logout = () => {
     setUser(null);

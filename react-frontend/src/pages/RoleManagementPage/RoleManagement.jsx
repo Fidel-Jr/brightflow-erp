@@ -14,20 +14,7 @@ const RoleManagementPage = () => {
   const [modalMode, setModalMode] = useState('add');
   const [selectedRole, setSelectedRole] = useState(null);
 
-  // ✅ Fetch roles here
-    useEffect(() => {
-      const fetchRoles = async () => {
-        try {
-          const response = await getRoles();
-          console.log('Fetched roles:', response.data);
-          // setRoles(response.data);
-        } catch (err) {
-          console.error('Failed to fetch roles', err);
-        }
-      };
   
-      fetchRoles();
-    }, []);
 
   const [roles, setRoles] = useState([
     {
@@ -125,6 +112,80 @@ const RoleManagementPage = () => {
     }
   ];
 
+  const roleDescriptions = {
+    'Admin': 'Full system access with all permissions',
+    'Manager': 'Can manage content and view reports',
+    'Warehouse Staff': 'Read-only access to content',
+    'Delivery Staff': 'Can manage users and content'
+  };
+
+  const rolePermissions = {
+    'Admin': {
+      users: ['create', 'read', 'update', 'delete'],
+      roles: ['create', 'read', 'update', 'delete'],
+      content: ['create', 'read', 'update', 'delete'],
+      settings: ['read', 'update'],
+      reports: ['read', 'export']
+    },
+    'Manager': {
+      users: ['read'],
+      roles: [],
+      content: ['create', 'read', 'update', 'delete'],
+      settings: ['read'],
+      reports: ['read']
+    },
+    'Warehouse Staff': {
+      users: [],
+      roles: [],
+      content: ['read'],
+      settings: [],
+      reports: ['read']
+    },
+    'Delivery Staff': {
+      users: ['create', 'read', 'update'],
+      roles: ['read'],
+      content: ['create', 'read', 'update', 'delete'],
+      settings: ['read'],
+      reports: ['read', 'export']
+    }
+  };
+
+
+  const defaultPermissions = {};
+    permissionModules.forEach(mod => {
+      defaultPermissions[mod.name] = []; // start with empty actions
+  });
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const response = await getRoles();
+        console.log('Fetched roles:', response.data);
+
+        // Map the API roles to full role objects
+        const rolesData = (Array.isArray(response.data) ? response.data : response.data?.roles || [])
+          .map((r, index) => ({
+            id: index + 1, // fallback id
+            name: r.name || `Role ${index + 1}`, // backend only provides name
+            description: roleDescriptions[r] || 'No description available',
+            color: r.color || 'primary',
+            userCount: r.userCount || 0,
+            permissions: rolePermissions[r.name] || {}, 
+            createdAt: r.createdAt || new Date().toISOString().split('T')[0]
+          }));
+
+        setRoles(rolesData);
+      } catch (err) {
+        console.error('Failed to fetch roles', err);
+        setRoles([]); // fallback to empty array
+      }
+    };
+
+    fetchRoles();
+  }, []);
+
+    
+    console.log('Current roles state:', roles);
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 992) {

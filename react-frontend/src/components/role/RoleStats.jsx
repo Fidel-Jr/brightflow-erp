@@ -5,19 +5,19 @@ const RoleStats = ({ roles, permissionModules }) => {
   const stats = [
     {
       label: 'Total Roles',
-      value: roles.length,
+      value: Array.isArray(roles) ? roles.length : 0,
       icon: 'bi-shield-check',
       gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
     },
     {
       label: 'Assigned Users',
-      value: roles.reduce((sum, role) => sum + role.userCount, 0),
+      value: Array.isArray(roles) ? roles.reduce((sum, role) => sum + role.userCount, 0) : 0,
       icon: 'bi-people',
       gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
     },
     {
       label: 'Permissions',
-      value: permissionModules.reduce((sum, mod) => sum + mod.actions.length, 0),
+      value: Array.isArray(permissionModules) ? permissionModules.reduce((sum, mod) => sum + mod.actions.length, 0) : 0,
       icon: 'bi-key',
       gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
     },
@@ -28,6 +28,7 @@ const RoleStats = ({ roles, permissionModules }) => {
       gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
     }
   ];
+
 
   return (
     <Row className="g-3 mb-4">

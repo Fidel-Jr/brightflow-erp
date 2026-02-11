@@ -2,9 +2,10 @@ import React from 'react';
 import { Card, Badge, Dropdown, ListGroup } from 'react-bootstrap';
 
 const RoleCard = ({ role, onEdit, onDelete }) => {
-  const getPermissionCount = (permissions) => {
+  const getPermissionCount = (permissions = {}) => {
     return Object.values(permissions).flat().length;
   };
+
 
   return (
     <Card className="border-0 shadow-sm h-100 role-card">
@@ -66,7 +67,7 @@ const RoleCard = ({ role, onEdit, onDelete }) => {
           </div>
           
           <ListGroup variant="flush">
-            {Object.entries(role.permissions).map(([module, perms]) => (
+            {Object.entries(role.permissions || {}).map(([module, perms]) => (
               perms.length > 0 && (
                 <ListGroup.Item 
                   key={module} 
@@ -79,6 +80,7 @@ const RoleCard = ({ role, onEdit, onDelete }) => {
                 </ListGroup.Item>
               )
             ))}
+
           </ListGroup>
         </div>
 

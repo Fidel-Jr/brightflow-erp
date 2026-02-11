@@ -3,6 +3,8 @@ import { Row, Col } from 'react-bootstrap';
 import RoleCard from './RoleCard';
 
 const RoleGrid = ({ roles, onEdit, onDelete, onDuplicate }) => {
+  // const safeRoles = Array.isArray(roles) ? roles : [];
+  console.log('Rendering RoleGrid with roles:', roles);
   return (
     <Row className="g-4">
       {roles.map((role) => (
