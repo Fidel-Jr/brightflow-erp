@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, Table, Form, Pagination } from 'react-bootstrap';
 import UserTableRow from './UserTableRow';
 
-const UserTable = ({ users, currentPage, totalPages, pageSize, setCurrentPage, setPageSize, onEdit, onDelete, onViewDetails }) => {
+const UserTable = ({ users, currentPage, totalPages, pageSize, setCurrentPage, setPageSize, onEdit, onDelete, onViewDetails, canEdit, canDelete }) => {
 
   const handlePageSizeChange = (e) => {
     setPageSize(Number(e.target.value));
@@ -42,6 +42,8 @@ const UserTable = ({ users, currentPage, totalPages, pageSize, setCurrentPage, s
                   onEdit={onEdit}
                   onDelete={onDelete}
                   onViewDetails={onViewDetails}
+                  canEdit={canEdit}
+                  canDelete={canDelete}
                 />
               ))}
             </tbody>

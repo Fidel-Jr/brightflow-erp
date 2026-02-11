@@ -42,14 +42,17 @@ const UserFilters = ({
           </Col>
 
           <Col md={5} className="text-md-end">
-            <Button 
-              variant="primary" 
-              onClick={onAddUser}
-              className="me-2"
-            >
-              <i className="bi bi-plus-circle me-2"></i>
-              Add New User
-            </Button>
+            {onAddUser && (
+              <Button 
+                variant="primary" 
+                onClick={onAddUser}
+                className="me-2"
+              >
+                <i className="bi bi-plus-circle me-2"></i>
+                Add New User
+              </Button>
+            )}
+            
             <Button variant="outline-secondary">
               <i className="bi bi-download me-2"></i>
               Export

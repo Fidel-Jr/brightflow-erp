@@ -8,6 +8,8 @@ import UserFilters from '../../components/user/UserFilters';
 import UserTable from '../../components/user/UserTable';
 import UserModal from '../../components/user/UserModal';
 import UserDetailsModal from '../../components/user/UserDetailsModal';
+import { useAuth } from "../../context/AuthContext";
+import { hasRole } from "../../helper/auth-roles";
 import { getUsers, deleteUser } from '../../api/user-api';
 
 const UserManagement = () => {
@@ -28,6 +30,11 @@ const UserManagement = () => {
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+
+  const { user } = useAuth();
+
+  const isAdmin = hasRole(user, "Admin");
+  const isManager = hasRole(user, "Manager");
 
   
     // Fetch users from API (or use mock)
@@ -166,7 +173,7 @@ const UserManagement = () => {
               setSearchTerm={setSearchTerm}
               filterRole={filterRole}
               setFilterRole={setFilterRole}
-              onAddUser={() => handleOpenModal('add')}
+              onAddUser={isAdmin ? () => handleOpenModal('add') : false}
             />
 
             {/* Table */}
@@ -180,6 +187,8 @@ const UserManagement = () => {
               onEdit={(user) => handleOpenModal('edit', user)}
               onDelete={handleDelete}
               onViewDetails={handleViewDetails}
+              canEdit={isAdmin}
+              canDelete={isAdmin}
             />
           </Container>
         </main>

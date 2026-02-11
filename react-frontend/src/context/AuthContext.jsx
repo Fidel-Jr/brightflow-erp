@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }) => {
     getCurrentUser()
       .then((res) => {
         setUser(res.data);  
-        console.log("User fetched:", res.data);
+        // console.log("User fetched:", res.data);
       })
       .catch(() => {
         // Token invalid or expired
