@@ -6,7 +6,7 @@ const UserFilters = ({
   setSearchTerm, 
   filterRole, 
   setFilterRole, 
-  onAddUser 
+  onAddUser   
 }) => {
   const roles = ['Admin', 'Manager', 'Warehouse Staff', 'Delivery Staff'];
 
