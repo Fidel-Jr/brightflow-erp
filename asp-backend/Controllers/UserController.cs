@@ -46,15 +46,22 @@ namespace asp_backend.Controllers
                 id = user.Id,
                 username = user.UserName,
                 email = user.Email,
-                roles = roles
+                roles = roles,
+                lastLoginAt = user.LastLoginAt?
+                                .ToLocalTime()
+                                .ToString("MM/dd/yyyy hh:mm:ss tt")
             });
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
-            var users = _userManager.Users.ToList();
+            var users = _userManager.Users
+                .OrderByDescending(u => u.LastLoginAt ?? DateTime.MinValue) // most recent login first
+                .ToList();
+
             var userList = new List<object>();
+
             foreach (var user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user);
@@ -63,11 +70,17 @@ namespace asp_backend.Controllers
                     id = user.Id,
                     username = user.UserName,
                     email = user.Email,
-                    roles = roles
+                    status = user.Status.ToString(),
+                    roles = roles,
+                    lastLoginAt = user.LastLoginAt?
+                                    .ToLocalTime()
+                                    .ToString("MM/dd/yyyy hh:mm:ss tt")
                 });
             }
+
             return Ok(userList);
         }
+
 
         [HttpPost]
         [Authorize(Policy = "AdminOnly")]
@@ -106,7 +119,8 @@ namespace asp_backend.Controllers
             var user = new ApplicationUser
             {
                 UserName = dto.Username,
-                Email = dto.Email
+                Email = dto.Email,
+                Status = dto.Status
             };
 
             var result = await _userManager.CreateAsync(user, dto.Password);
@@ -132,7 +146,8 @@ namespace asp_backend.Controllers
                     user.Id,
                     user.UserName,
                     user.Email,
-                    Roles = dto.Roles // return the role names as-is
+                    Roles = dto.Roles, // return the role names as-is
+                    user.Status
                 }
             });
         }
@@ -147,6 +162,10 @@ namespace asp_backend.Controllers
 
             user.UserName = dto.Username ?? user.UserName;
             user.Email = dto.Email ?? user.Email;
+            if (dto.Status.HasValue)
+            {
+                user.Status = dto.Status.Value;
+            }
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
                 return BadRequest(new
@@ -183,7 +202,7 @@ namespace asp_backend.Controllers
                         errors = invalidRoles.Select(r => $"Role '{r}' does not exist in the system.")
                     });
                 }
-
+                
                 // Remove roles not in new selection
                 var currentRoles = await _userManager.GetRolesAsync(user);
 
@@ -198,6 +217,8 @@ namespace asp_backend.Controllers
                     await _userManager.AddToRolesAsync(user, rolesToAdd);
             }
 
+            
+
             // Return updated roles
             var updatedRoles = await _userManager.GetRolesAsync(user);
 
@@ -210,7 +231,8 @@ namespace asp_backend.Controllers
                     user.Id,
                     user.UserName,
                     user.Email,
-                    Roles = updatedRoles
+                    Roles = updatedRoles,
+                    user.Status
                 }
             });
 

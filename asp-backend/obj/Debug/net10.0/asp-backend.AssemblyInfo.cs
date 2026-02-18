@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("asp-backend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+887ca5431acdc42cb70bc97c6837a1bce4d19cdf")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1d9f735b4401727ac94b2493e7a8251a12c2df6d")]
 [assembly: System.Reflection.AssemblyProductAttribute("asp-backend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("asp-backend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

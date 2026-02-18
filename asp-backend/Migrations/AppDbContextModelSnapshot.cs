@@ -220,6 +220,10 @@ namespace asp_backend.Migrations
                         .HasColumnType("text")
                         .HasColumnName("image_path");
 
+                    b.Property<DateTime?>("LastLoginAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_login_at");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean")
                         .HasColumnName("lockout_enabled");
@@ -254,6 +258,10 @@ namespace asp_backend.Migrations
                         .HasColumnType("text")
                         .HasColumnName("security_stamp");
 
+                    b.Property<string>("Status")
+                        .HasColumnType("text")
+                        .HasColumnName("status");
+
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean")
                         .HasColumnName("two_factor_enabled");
@@ -274,6 +282,133 @@ namespace asp_backend.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("asp_backend.Models.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id")
+                        .HasName("pk_categories");
+
+                    b.ToTable("categories", (string)null);
+                });
+
+            modelBuilder.Entity("asp_backend.Models.Location", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_locations");
+
+                    b.ToTable("locations", (string)null);
+                });
+
+            modelBuilder.Entity("asp_backend.Models.Product", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("integer")
+                        .HasColumnName("category_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("image_url");
+
+                    b.Property<int>("LocationId")
+                        .HasColumnType("integer")
+                        .HasColumnName("location_id");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric")
+                        .HasColumnName("price");
+
+                    b.Property<int>("ReorderLevel")
+                        .HasColumnType("integer")
+                        .HasColumnName("reorder_level");
+
+                    b.Property<string>("SKU")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("sku");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("status");
+
+                    b.Property<int>("StockQuantity")
+                        .HasColumnType("integer")
+                        .HasColumnName("stock_quantity");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_products");
+
+                    b.HasIndex("CategoryId")
+                        .HasDatabaseName("ix_products_category_id");
+
+                    b.HasIndex("LocationId")
+                        .HasDatabaseName("ix_products_location_id");
+
+                    b.ToTable("products", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -331,6 +466,32 @@ namespace asp_backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_asp_net_user_tokens_asp_net_users_user_id");
+                });
+
+            modelBuilder.Entity("asp_backend.Models.Product", b =>
+                {
+                    b.HasOne("asp_backend.Models.Category", "Category")
+                        .WithMany("Products")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_products_categories_category_id");
+
+                    b.HasOne("asp_backend.Models.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_products_locations_location_id");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Location");
+                });
+
+            modelBuilder.Entity("asp_backend.Models.Category", b =>
+                {
+                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

@@ -135,3 +135,4 @@ D:\source\repos\React Projects\BrightFlow\asp-backend\bin\Debug\net10.0\Microsof
 D:\source\repos\React Projects\BrightFlow\asp-backend\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 D:\source\repos\React Projects\BrightFlow\asp-backend\bin\Debug\net10.0\Microsoft.IdentityModel.Tokens.dll
 D:\source\repos\React Projects\BrightFlow\asp-backend\bin\Debug\net10.0\System.IdentityModel.Tokens.Jwt.dll
+D:\source\repos\React Projects\BrightFlow\asp-backend\bin\Debug\net10.0\asp-backend.staticwebassets.runtime.json

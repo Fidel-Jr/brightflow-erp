@@ -1,4 +1,6 @@
-﻿namespace asp_backend.DTOs
+﻿using asp_backend.Models.Enums;
+
+namespace asp_backend.DTOs
 {
     public class UpdateUserDto
     {
@@ -6,5 +8,7 @@
         public string? Email { get; set; }
         public string? Password { get; set; }
         public string[]? Roles { get; set; }
+        // Admin-only
+        public UserStatus? Status { get; set; }
     }
 }

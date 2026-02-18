@@ -3,16 +3,52 @@
   "WorkspaceRootPath": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\models\\applicationuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:models\\applicationuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\controllers\\categorycontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:controllers\\categorycontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\controllers\\locationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:controllers\\locationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\controllers\\productcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:controllers\\productcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\models\\location.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:models\\location.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\services\\uploadimageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:services\\uploadimageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\models\\product.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:models\\product.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\dtos\\productdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:dtos\\productdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\dtos\\updateuserdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:dtos\\updateuserdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\dtos\\updateuserdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:dtos\\updateuserdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\models\\category.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:models\\category.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\dtos\\registerdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -23,24 +59,48 @@
       "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:controllers\\rolecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\extensions\\userroleextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:extensions\\userroleextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\models\\applicationuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:models\\applicationuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\asp-backend.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:asp-backend.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\models\\applicationrole.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:models\\applicationrole.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\dtos\\roledto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:dtos\\roledto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\models\\enums\\userstatus.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:models\\enums\\userstatus.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\dtos\\roledto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:dtos\\roledto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Migrations\\20260209034353_UpdateUserStatusPropertyToVarchar.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Migrations\\20260209034353_UpdateUserStatusPropertyToVarchar.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\migrations\\20260208041027_addstatuspropertyusermodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:migrations\\20260208041027_addstatuspropertyusermodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\extensions\\userroleextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:extensions\\userroleextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\asp-backend.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:asp-backend.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
       "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\controllers\\weatherforecastcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -51,8 +111,16 @@
       "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:services\\jwtservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\migrations\\20260209035802_addapplicationuserlastloginatproperty.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:migrations\\20260209035802_addapplicationuserlastloginatproperty.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\migrations\\20260209034632_updateuserstatuspropertytovarchar.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:migrations\\20260209034632_updateuserstatuspropertytovarchar.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|d:\\source\\repos\\react projects\\brightflow\\asp-backend\\migrations\\20260214080211_addcategorylocationproductmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1CDFC969-D753-04AF-4FD6-9B0533CE8DF6}|asp-backend.csproj|solutionrelative:migrations\\20260214080211_addcategorylocationproductmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -62,7 +130,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 7,
+          "SelectedChildIndex": 8,
           "Children": [
             {
               "$type": "Bookmark",
@@ -94,46 +162,260 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "ApplicationUser.cs",
-              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Models\\ApplicationUser.cs",
-              "RelativeDocumentMoniker": "Models\\ApplicationUser.cs",
-              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Models\\ApplicationUser.cs",
-              "RelativeToolTip": "Models\\ApplicationUser.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAABAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "LocationController.cs",
+              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Controllers\\LocationController.cs",
+              "RelativeDocumentMoniker": "Controllers\\LocationController.cs",
+              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Controllers\\LocationController.cs",
+              "RelativeToolTip": "Controllers\\LocationController.cs",
+              "ViewState": "AgIAAB4AAAAAAAAAAAAYwAcAAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-07T13:27:44.644Z",
+              "WhenOpened": "2026-02-18T03:19:35.929Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "CategoryController.cs",
+              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Controllers\\CategoryController.cs",
+              "RelativeDocumentMoniker": "Controllers\\CategoryController.cs",
+              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Controllers\\CategoryController.cs",
+              "RelativeToolTip": "Controllers\\CategoryController.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAQwB0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-18T02:52:51.212Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
+              "Title": "ProductController.cs",
+              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Controllers\\ProductController.cs",
+              "RelativeDocumentMoniker": "Controllers\\ProductController.cs",
+              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Controllers\\ProductController.cs",
+              "RelativeToolTip": "Controllers\\ProductController.cs",
+              "ViewState": "AgIAAB4AAAAAAAAAAAAYwDEAAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-14T08:05:06.508Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Product.cs",
+              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Models\\Product.cs",
+              "RelativeDocumentMoniker": "Models\\Product.cs",
+              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Models\\Product.cs",
+              "RelativeToolTip": "Models\\Product.cs",
+              "ViewState": "AgIAABEAAAAAAAAAAAAAACIAAABCAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-14T00:08:07.7Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Category.cs",
+              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Models\\Category.cs",
+              "RelativeDocumentMoniker": "Models\\Category.cs",
+              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Models\\Category.cs",
+              "RelativeToolTip": "Models\\Category.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-14T00:09:26.339Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Location.cs",
+              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Models\\Location.cs",
+              "RelativeDocumentMoniker": "Models\\Location.cs",
+              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Models\\Location.cs",
+              "RelativeToolTip": "Models\\Location.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAA6AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-14T00:23:36.305Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-06T12:35:37.77Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "ProductDto.cs",
+              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\DTOs\\ProductDto.cs",
+              "RelativeDocumentMoniker": "DTOs\\ProductDto.cs",
+              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\DTOs\\ProductDto.cs",
+              "RelativeToolTip": "DTOs\\ProductDto.cs",
+              "ViewState": "AgIAAAIAAAAAAAAAAAAwwA8AAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-14T08:09:36.92Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "UploadImageService.cs",
+              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Services\\UploadImageService.cs",
+              "RelativeDocumentMoniker": "Services\\UploadImageService.cs",
+              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Services\\UploadImageService.cs",
+              "RelativeToolTip": "Services\\UploadImageService.cs",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAAACIAAABHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-17T12:29:59.727Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
               "Title": "UpdateUserDto.cs",
               "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\DTOs\\UpdateUserDto.cs",
               "RelativeDocumentMoniker": "DTOs\\UpdateUserDto.cs",
               "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\DTOs\\UpdateUserDto.cs",
               "RelativeToolTip": "DTOs\\UpdateUserDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAlAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAaAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-07T13:01:24.422Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-07T13:01:24.422Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "UserRoleExtensions.cs",
-              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Extensions\\UserRoleExtensions.cs",
-              "RelativeDocumentMoniker": "Extensions\\UserRoleExtensions.cs",
-              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Extensions\\UserRoleExtensions.cs",
-              "RelativeToolTip": "Extensions\\UserRoleExtensions.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 9,
+              "Title": "UserController.cs",
+              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Controllers\\UserController.cs",
+              "RelativeDocumentMoniker": "Controllers\\UserController.cs",
+              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Controllers\\UserController.cs",
+              "RelativeToolTip": "Controllers\\UserController.cs",
+              "ViewState": "AgIAAIUAAAAAAAAAAAAkwJsAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-07T09:56:41.596Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-06T12:44:04.298Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 11,
+              "Title": "AppDbContext.cs",
+              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Data\\AppDbContext.cs",
+              "RelativeDocumentMoniker": "Data\\AppDbContext.cs",
+              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Data\\AppDbContext.cs",
+              "RelativeToolTip": "Data\\AppDbContext.cs",
+              "ViewState": "AgIAAAQAAAAAAAAAAAAUwB4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-09T03:45:23.7Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "RoleController.cs",
+              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Controllers\\RoleController.cs",
+              "RelativeDocumentMoniker": "Controllers\\RoleController.cs",
+              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Controllers\\RoleController.cs",
+              "RelativeToolTip": "Controllers\\RoleController.cs",
+              "ViewState": "AgIAABkAAAAAAAAAAAAYwCsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-06T14:11:35.461Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 29,
+              "Title": "20260214080211_AddCategoryLocationProductModel.cs",
+              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Migrations\\20260214080211_AddCategoryLocationProductModel.cs",
+              "RelativeDocumentMoniker": "Migrations\\20260214080211_AddCategoryLocationProductModel.cs",
+              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Migrations\\20260214080211_AddCategoryLocationProductModel.cs",
+              "RelativeToolTip": "Migrations\\20260214080211_AddCategoryLocationProductModel.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAABYAAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-14T08:02:11.816Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "RegisterDto.cs",
+              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\DTOs\\RegisterDto.cs",
+              "RelativeDocumentMoniker": "DTOs\\RegisterDto.cs",
+              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\DTOs\\RegisterDto.cs",
+              "RelativeToolTip": "DTOs\\RegisterDto.cs",
+              "ViewState": "AgIAABYAAAAAAAAAAAAQwBEAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-06T13:16:34.456Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "ApplicationRole.cs",
+              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Models\\ApplicationRole.cs",
+              "RelativeDocumentMoniker": "Models\\ApplicationRole.cs",
+              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Models\\ApplicationRole.cs",
+              "RelativeToolTip": "Models\\ApplicationRole.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAABCAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-11T01:39:05.257Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "UserStatus.cs",
+              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Models\\Enums\\UserStatus.cs",
+              "RelativeDocumentMoniker": "Models\\Enums\\UserStatus.cs",
+              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Models\\Enums\\UserStatus.cs",
+              "RelativeToolTip": "Models\\Enums\\UserStatus.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-08T04:18:42.122Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "ApplicationUser.cs",
+              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Models\\ApplicationUser.cs",
+              "RelativeDocumentMoniker": "Models\\ApplicationUser.cs",
+              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Models\\ApplicationUser.cs",
+              "RelativeToolTip": "Models\\ApplicationUser.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAuwA8AAAAyAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-07T13:27:44.644Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-02-06T12:37:12.737Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "Controllers\\AuthController.cs",
+              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "Controllers\\AuthController.cs",
+              "ViewState": "AgIAABEAAAAAAAAAAAAqwCQAAAAxAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-06T12:39:03.866Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "20260209035802_AddApplicationUserLastLoginAtProperty.cs",
+              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Migrations\\20260209035802_AddApplicationUserLastLoginAtProperty.cs",
+              "RelativeDocumentMoniker": "Migrations\\20260209035802_AddApplicationUserLastLoginAtProperty.cs",
+              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Migrations\\20260209035802_AddApplicationUserLastLoginAtProperty.cs",
+              "RelativeToolTip": "Migrations\\20260209035802_AddApplicationUserLastLoginAtProperty.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-09T03:58:02.324Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
               "Title": "RoleDto.cs",
               "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\DTOs\\RoleDto.cs",
               "RelativeDocumentMoniker": "DTOs\\RoleDto.cs",
@@ -145,58 +427,67 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "RoleController.cs",
-              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Controllers\\RoleController.cs",
-              "RelativeDocumentMoniker": "Controllers\\RoleController.cs",
-              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Controllers\\RoleController.cs",
-              "RelativeToolTip": "Controllers\\RoleController.cs",
-              "ViewState": "AgIAABMAAAAAAAAAAAAQwEEAAAAiAAAAAAAAAA==",
+              "DocumentIndex": 28,
+              "Title": "20260209034632_UpdateUserStatusPropertyToVarchar.cs",
+              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Migrations\\20260209034632_UpdateUserStatusPropertyToVarchar.cs",
+              "RelativeDocumentMoniker": "Migrations\\20260209034632_UpdateUserStatusPropertyToVarchar.cs",
+              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Migrations\\20260209034632_UpdateUserStatusPropertyToVarchar.cs",
+              "RelativeToolTip": "Migrations\\20260209034632_UpdateUserStatusPropertyToVarchar.cs",
+              "ViewState": "AgIAABYAAAAAAAAAAAAQwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-06T14:11:35.461Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-09T03:46:32.988Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\appsettings.json",
-              "RelativeDocumentMoniker": "appsettings.json",
-              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\appsettings.json",
-              "RelativeToolTip": "appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAEAAAAAAAAAA==",
+              "DocumentIndex": 20,
+              "Title": "20260209034353_UpdateUserStatusPropertyToVarchar.cs",
+              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Migrations\\20260209034353_UpdateUserStatusPropertyToVarchar.cs",
+              "RelativeDocumentMoniker": "Migrations\\20260209034353_UpdateUserStatusPropertyToVarchar.cs",
+              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Migrations\\20260209034353_UpdateUserStatusPropertyToVarchar.cs",
+              "RelativeToolTip": "Migrations\\20260209034353_UpdateUserStatusPropertyToVarchar.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-09T03:43:53.236Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "20260208041027_AddStatusPropertyUserModel.cs",
+              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Migrations\\20260208041027_AddStatusPropertyUserModel.cs",
+              "RelativeDocumentMoniker": "Migrations\\20260208041027_AddStatusPropertyUserModel.cs",
+              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Migrations\\20260208041027_AddStatusPropertyUserModel.cs",
+              "RelativeToolTip": "Migrations\\20260208041027_AddStatusPropertyUserModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-08T04:10:27.645Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "launchSettings.json",
+              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Properties\\launchSettings.json",
+              "RelativeDocumentMoniker": "Properties\\launchSettings.json",
+              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Properties\\launchSettings.json",
+              "RelativeToolTip": "Properties\\launchSettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-02-06T12:37:12.737Z"
+              "WhenOpened": "2026-02-09T03:21:18.226Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "UserController.cs",
-              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Controllers\\UserController.cs",
-              "RelativeDocumentMoniker": "Controllers\\UserController.cs",
-              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Controllers\\UserController.cs",
-              "RelativeToolTip": "Controllers\\UserController.cs",
-              "ViewState": "AgIAAKoAAAAAAAAAAAAiwNYAAAAPAAAAAAAAAA==",
+              "DocumentIndex": 23,
+              "Title": "UserRoleExtensions.cs",
+              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Extensions\\UserRoleExtensions.cs",
+              "RelativeDocumentMoniker": "Extensions\\UserRoleExtensions.cs",
+              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Extensions\\UserRoleExtensions.cs",
+              "RelativeToolTip": "Extensions\\UserRoleExtensions.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-06T12:44:04.298Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-07T09:56:41.596Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "RegisterDto.cs",
-              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\DTOs\\RegisterDto.cs",
-              "RelativeDocumentMoniker": "DTOs\\RegisterDto.cs",
-              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\DTOs\\RegisterDto.cs",
-              "RelativeToolTip": "DTOs\\RegisterDto.cs",
-              "ViewState": "AgIAAAIAAAAAAAAAAAAuwA8AAAAqAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-06T13:16:34.456Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 24,
               "Title": "asp-backend.csproj",
               "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\asp-backend.csproj",
               "RelativeDocumentMoniker": "asp-backend.csproj",
@@ -208,31 +499,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "AuthController.cs",
-              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Controllers\\AuthController.cs",
-              "RelativeDocumentMoniker": "Controllers\\AuthController.cs",
-              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Controllers\\AuthController.cs",
-              "RelativeToolTip": "Controllers\\AuthController.cs",
-              "ViewState": "AgIAAB8AAAAAAAAAAAAAACoAAAAkAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-06T12:39:03.866Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "Program.cs",
-              "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Program.cs",
-              "RelativeDocumentMoniker": "Program.cs",
-              "ToolTip": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Program.cs",
-              "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAABwAAAAAAAAAAAAAAC0AAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-06T12:35:37.77Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 26,
               "Title": "JwtService.cs",
               "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Services\\JwtService.cs",
               "RelativeDocumentMoniker": "Services\\JwtService.cs",
@@ -244,7 +511,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 25,
               "Title": "WeatherForecastController.cs",
               "DocumentMoniker": "D:\\source\\repos\\React Projects\\BrightFlow\\asp-backend\\Controllers\\WeatherForecastController.cs",
               "RelativeDocumentMoniker": "Controllers\\WeatherForecastController.cs",

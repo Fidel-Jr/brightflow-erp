@@ -67,6 +67,262 @@
         }
       }
     },
+    "/api/categories": {
+      "get": {
+        "tags": [
+          "Category"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/locations": {
+      "get": {
+        "tags": [
+          "Location"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/products": {
+      "get": {
+        "tags": [
+          "Product"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "CategoryId",
+                  "Description",
+                  "LocationId",
+                  "Name",
+                  "Price",
+                  "ReorderLevel",
+                  "SKU",
+                  "StockQuantity"
+                ],
+                "type": "object",
+                "properties": {
+                  "Name": {
+                    "type": "string"
+                  },
+                  "Description": {
+                    "type": "string"
+                  },
+                  "SKU": {
+                    "type": "string"
+                  },
+                  "CategoryId": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "LocationId": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "Image": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "Price": {
+                    "type": "number",
+                    "format": "double"
+                  },
+                  "StockQuantity": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "ReorderLevel": {
+                    "type": "integer",
+                    "format": "int32"
+                  }
+                }
+              },
+              "encoding": {
+                "Name": {
+                  "style": "form"
+                },
+                "Description": {
+                  "style": "form"
+                },
+                "SKU": {
+                  "style": "form"
+                },
+                "CategoryId": {
+                  "style": "form"
+                },
+                "LocationId": {
+                  "style": "form"
+                },
+                "Image": {
+                  "style": "form"
+                },
+                "Price": {
+                  "style": "form"
+                },
+                "StockQuantity": {
+                  "style": "form"
+                },
+                "ReorderLevel": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/products/{id}": {
+      "put": {
+        "tags": [
+          "Product"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "CategoryId",
+                  "Description",
+                  "LocationId",
+                  "Name",
+                  "Price",
+                  "ReorderLevel",
+                  "SKU",
+                  "StockQuantity"
+                ],
+                "type": "object",
+                "properties": {
+                  "Name": {
+                    "type": "string"
+                  },
+                  "Description": {
+                    "type": "string"
+                  },
+                  "SKU": {
+                    "type": "string"
+                  },
+                  "CategoryId": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "LocationId": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "Image": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "Price": {
+                    "type": "number",
+                    "format": "double"
+                  },
+                  "StockQuantity": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "ReorderLevel": {
+                    "type": "integer",
+                    "format": "int32"
+                  }
+                }
+              },
+              "encoding": {
+                "Name": {
+                  "style": "form"
+                },
+                "Description": {
+                  "style": "form"
+                },
+                "SKU": {
+                  "style": "form"
+                },
+                "CategoryId": {
+                  "style": "form"
+                },
+                "LocationId": {
+                  "style": "form"
+                },
+                "Image": {
+                  "style": "form"
+                },
+                "Price": {
+                  "style": "form"
+                },
+                "StockQuantity": {
+                  "style": "form"
+                },
+                "ReorderLevel": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Product"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/roles": {
       "get": {
         "tags": [
@@ -283,6 +539,7 @@
           "email",
           "password",
           "roles",
+          "status",
           "username"
         ],
         "type": "object",
@@ -304,6 +561,9 @@
             "items": {
               "type": "string"
             }
+          },
+          "status": {
+            "$ref": "#/components/schemas/UserStatus"
           }
         },
         "additionalProperties": false
@@ -342,9 +602,19 @@
               "type": "string"
             },
             "nullable": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/UserStatus"
           }
         },
         "additionalProperties": false
+      },
+      "UserStatus": {
+        "enum": [
+          "Active",
+          "Inactive"
+        ],
+        "type": "string"
       },
       "WeatherForecast": {
         "type": "object",
@@ -374,6 +644,15 @@
   "tags": [
     {
       "name": "Auth"
+    },
+    {
+      "name": "Category"
+    },
+    {
+      "name": "Location"
+    },
+    {
+      "name": "Product"
     },
     {
       "name": "Role"

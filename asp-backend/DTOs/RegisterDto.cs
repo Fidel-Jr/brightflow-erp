@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using asp_backend.Models.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace asp_backend.DTOs
 {
@@ -27,5 +28,7 @@ namespace asp_backend.DTOs
         public required string Password { get; set; }
         [Required]
         public string[]? Roles { get; set; }
+        [Required]
+        public UserStatus Status { get; set; } = UserStatus.Active;
     }
 }

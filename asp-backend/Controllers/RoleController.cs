@@ -1,4 +1,5 @@
 ﻿using asp_backend.DTOs;
+using asp_backend.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -11,22 +12,39 @@ namespace asp_backend.Controllers
     public class RoleController : ControllerBase
     {
         public static RoleManager<IdentityRole> _roleManager;
+        public static UserManager<ApplicationUser> _userManager;
 
-        public RoleController(RoleManager<IdentityRole> roleManager)
-        {
+        public RoleController(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
+        { 
             _roleManager = roleManager;
+            _userManager = userManager;
         }
 
         [HttpGet]
         [Authorize(Policy = "AdminOnly")]
-        public IActionResult GetRoles()
+        public async Task<IActionResult> GetRoles()
         {
-            var roles = _roleManager.Roles
-                .Select(r => r.Name)
-                .ToList();
+            // Get all roles
+            var roles = _roleManager.Roles.ToList();
 
-            return Ok(new { roles });
+            // Build a response with role name + assigned user count
+            var rolesWithUserCount = new List<object>();
+
+            foreach (var role in roles)
+            {
+                // Get all users in this role
+                var usersInRole = await _userManager.GetUsersInRoleAsync(role.Name!);
+
+                rolesWithUserCount.Add(new
+                {
+                    name = role.Name,
+                    userCount = usersInRole.Count
+                });
+            }
+
+            return Ok(rolesWithUserCount);
         }
+
 
 
         [HttpPost]

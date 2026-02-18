@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,9 +14,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<JwtService>();
+builder.Services.AddScoped<UploadImageService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")).UseSnakeCaseNamingConvention());
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+    });
 
 // Identity
 builder.Services.AddIdentityCore<ApplicationUser>()
@@ -41,21 +49,30 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-    // Authorization Policies
-    builder.Services.AddAuthorization(options =>
-    {
-        options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
-        options.AddPolicy("WarehouseStaffOnly", policy => policy.RequireRole("Warehouse Staff"));
-        options.AddPolicy("DeliveryStaffOnly", policy => policy.RequireRole("Delivery Staff"));
-    });
+// Authorization Policies
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("ManagerOnly", policy => policy.RequireRole("Manager"));
+    options.AddPolicy("WarehouseStaffOnly", policy => policy.RequireRole("Warehouse Staff"));
+    options.AddPolicy("DeliveryStaffOnly", policy => policy.RequireRole("Delivery Staff"));
+});
 
-    // CORS
-    builder.Services.AddCors(options =>
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+        policy.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+    );
+});
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
     {
-        options.AddPolicy("AllowAll", policy =>
-            policy.AllowAnyOrigin()
-                  .AllowAnyMethod()
-                  .AllowAnyHeader()
+        options.JsonSerializerOptions.Converters.Add(
+            new JsonStringEnumConverter()
         );
     });
 
@@ -79,6 +96,8 @@ app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseStaticFiles();
 
 app.MapControllers();
 

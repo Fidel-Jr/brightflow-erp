@@ -32,6 +32,169 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "asp_backend.Controllers.CategoryController",
+    "Method": "GetCategories",
+    "RelativePath": "api/categories",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "asp_backend.Controllers.LocationController",
+    "Method": "GetLocations",
+    "RelativePath": "api/locations",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "asp_backend.Controllers.ProductController",
+    "Method": "GetProducts",
+    "RelativePath": "api/products",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "asp_backend.Controllers.ProductController",
+    "Method": "CreateProduct",
+    "RelativePath": "api/products",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Name",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Description",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SKU",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "CategoryId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "LocationId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Image",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "Price",
+        "Type": "System.Decimal",
+        "IsRequired": false
+      },
+      {
+        "Name": "StockQuantity",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "ReorderLevel",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "asp_backend.Controllers.ProductController",
+    "Method": "UpdateProduct",
+    "RelativePath": "api/products/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "Name",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Description",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SKU",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "CategoryId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "LocationId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Image",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "Price",
+        "Type": "System.Decimal",
+        "IsRequired": false
+      },
+      {
+        "Name": "StockQuantity",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "ReorderLevel",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "asp_backend.Controllers.ProductController",
+    "Method": "DeleteProduct",
+    "RelativePath": "api/products/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "asp_backend.Controllers.RoleController",
     "Method": "GetRoles",
     "RelativePath": "api/roles",

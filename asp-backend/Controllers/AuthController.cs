@@ -33,7 +33,8 @@ namespace asp_backend.Controllers
                     new { isSuccess = false, message = "Invalid credentials" }
                 );
             }
-
+            user.LastLoginAt = DateTime.UtcNow;
+            await _userManager.UpdateAsync(user);
             var roles = await _userManager.GetRolesAsync(user);
             var token = _jwtService.GenerateToken(user, roles);
 
