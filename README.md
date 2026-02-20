@@ -125,7 +125,7 @@ ConnectionStrings:DefaultConnection → PostgreSQL database connection
 | Auth (JWT + Identity)   | ✅ Completed                                |
 | User & Role Management  | ✅ Backend complete, Frontend Initial (WIP) |
 | Navbar & Sidebar Layout & Dashboard | ✅ Initial                                  |
-| Inventory Module        | ⬜ Pending                                  |
+| Inventory Module        | ✅ For Review                                  |
 | Orders Module           | ⬜ Pending                                  |
 | Deliveries Module       | ⬜ Pending                                  |
 | Dashboard & Reports     | ⬜ Pending                                  |
