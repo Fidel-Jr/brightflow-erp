@@ -130,5 +130,5 @@ ConnectionStrings:DefaultConnection → PostgreSQL database connection
 | Deliveries Module       | ⬜ Pending                                  |
 | Dashboard & Reports     | ⬜ Pending                                  |
 
-**Current phase:** Frontend development for User & Role Management, Layout refinement
+**Current phase:** Frontend and Backend development for Order Management, Layout refinement
 
