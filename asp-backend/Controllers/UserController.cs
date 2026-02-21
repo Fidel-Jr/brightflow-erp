@@ -22,6 +22,12 @@ namespace asp_backend.Controllers
             _roleManager = roleManager;
         }
 
+        public static class Roles
+        {
+            public const string WarehouseStaff = "Warehouse Staff";
+            public const string DeliveryStaff = "Delivery Staff";
+        }
+
         // GET: api/users/me
         [HttpGet("me")]
         [Authorize]  // JWT authentication required
@@ -70,6 +76,8 @@ namespace asp_backend.Controllers
                     id = user.Id,
                     username = user.UserName,
                     email = user.Email,
+                    fullName = user.FullName,
+                    phoneNumber = user.PhoneNumber,
                     status = user.Status.ToString(),
                     roles = roles,
                     lastLoginAt = user.LastLoginAt?
@@ -153,7 +161,7 @@ namespace asp_backend.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Policy = "AdminOnly")]
+        //[Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> UpdateUser(string id, [FromBody] UpdateUserDto dto)
         {
             var user = await _userManager.FindByIdAsync(id);
@@ -162,6 +170,8 @@ namespace asp_backend.Controllers
 
             user.UserName = dto.Username ?? user.UserName;
             user.Email = dto.Email ?? user.Email;
+            user.FullName = dto.FullName ?? user.FullName;
+            user.PhoneNumber = dto.PhoneNumber ?? user.PhoneNumber;
             if (dto.Status.HasValue)
             {
                 user.Status = dto.Status.Value;
@@ -217,8 +227,6 @@ namespace asp_backend.Controllers
                     await _userManager.AddToRolesAsync(user, rolesToAdd);
             }
 
-            
-
             // Return updated roles
             var updatedRoles = await _userManager.GetRolesAsync(user);
 
@@ -231,6 +239,8 @@ namespace asp_backend.Controllers
                     user.Id,
                     user.UserName,
                     user.Email,
+                    user.FullName,
+                    user.PhoneNumber,
                     Roles = updatedRoles,
                     user.Status
                 }
@@ -258,5 +268,25 @@ namespace asp_backend.Controllers
                 message = "User deleted successfully"
             });
         }
+
+        [HttpGet("staffs")]
+        public async Task<IActionResult> GetStaffs()
+        {
+            var warehouseStaff = await _userManager.GetUsersInRoleAsync(Roles.WarehouseStaff);
+            var deliveryStaff = await _userManager.GetUsersInRoleAsync(Roles.DeliveryStaff);
+
+            var staffs = warehouseStaff
+                .Union(deliveryStaff)
+                .Select(u => new
+                {
+                    u.Id,
+                    u.UserName,
+                    u.FullName,
+                    u.Email
+                });
+
+            return Ok(staffs);
+        }
+
     }
 }

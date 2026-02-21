@@ -15,6 +15,17 @@ namespace asp_backend.Data
             modelBuilder.Entity<Product>()
                 .Property(p => p.Status)
                 .HasConversion<string>();
+            modelBuilder.Entity<Order>()
+            .HasMany(o => o.OrderProducts)
+            .WithOne(op => op.Order)
+            .HasForeignKey(op => op.OrderId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<OrderProducts>()
+            .HasOne(op => op.Product)
+            .WithMany()
+            .HasForeignKey(op => op.ProductId)
+            .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);
         }
@@ -26,5 +37,8 @@ namespace asp_backend.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderProducts> OrderProducts { get; set; }
+
     }
 }
