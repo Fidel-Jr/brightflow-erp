@@ -27,7 +27,7 @@ builder.Services.AddControllers()
 
 // Identity
 builder.Services.AddIdentityCore<ApplicationUser>()
-    .AddRoles<IdentityRole>()
+    .AddRoles<ApplicationRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 

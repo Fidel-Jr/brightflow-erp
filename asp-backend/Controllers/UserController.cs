@@ -14,9 +14,9 @@ namespace asp_backend.Controllers
     public class UserController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        public static RoleManager<IdentityRole> _roleManager;
+        public static RoleManager<ApplicationRole> _roleManager;
 
-        public UserController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        public UserController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -140,7 +140,15 @@ namespace asp_backend.Controllers
             foreach (var roleName in dto.Roles!)
             {
                 if (!await _roleManager.RoleExistsAsync(roleName))
-                    await _roleManager.CreateAsync(new IdentityRole(roleName));
+                {
+                    var role = new ApplicationRole
+                    {
+                        Name = roleName,
+                        NormalizedName = roleName.ToUpper() // Important for Identity
+                    };
+
+                    await _roleManager.CreateAsync(role);
+                }
 
                 await _userManager.AddToRoleAsync(user, roleName);
             }

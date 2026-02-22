@@ -11,10 +11,10 @@ namespace asp_backend.Controllers
     [ApiController]
     public class RoleController : ControllerBase
     {
-        public static RoleManager<IdentityRole> _roleManager;
+        public static RoleManager<ApplicationRole> _roleManager;
         public static UserManager<ApplicationUser> _userManager;
 
-        public RoleController(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
+        public RoleController(RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager)
         { 
             _roleManager = roleManager;
             _userManager = userManager;
@@ -48,12 +48,17 @@ namespace asp_backend.Controllers
 
 
         [HttpPost]
-        [Authorize(Policy = "AdminOnly")]
+        //[Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> CreateRole([FromBody] RoleDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Role))
             {
                 return BadRequest(new { message = "Role name cannot be empty." });
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.Description))
+            {
+                return BadRequest(new { message = "Role Description cannot be empty." });
             }
 
             var roleExists = await _roleManager.RoleExistsAsync(dto.Role);
@@ -63,9 +68,14 @@ namespace asp_backend.Controllers
                 return Conflict(new { message = "Role already exists." });
             }
 
-            var result = await _roleManager.CreateAsync(
-                new IdentityRole(dto.Role)
-            );
+            var role = new ApplicationRole
+            {
+                Name = dto.Role,
+                NormalizedName = dto.Role.ToUpper(),
+                Description = dto.Description
+            };
+
+            var result = await _roleManager.CreateAsync(role);
 
             if (!result.Succeeded)
             {

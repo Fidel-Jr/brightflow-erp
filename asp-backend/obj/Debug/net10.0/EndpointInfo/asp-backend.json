@@ -854,11 +854,16 @@
       },
       "RoleDto": {
         "required": [
+          "description",
           "role"
         ],
         "type": "object",
         "properties": {
           "role": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "description": {
             "minLength": 1,
             "type": "string"
           }

@@ -1,5 +1,4 @@
 ﻿using asp_backend.Models.Enums;
-using static asp_backend.Models.Enums.Status;
 using static asp_backend.Models.Enums.OrderStatusPrio;
 using System.ComponentModel.DataAnnotations;
 

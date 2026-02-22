@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace asp_backend.Data
 {
-    public class AppDbContext : IdentityDbContext<ApplicationUser>
+    public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
     {
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -39,6 +39,7 @@ namespace asp_backend.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderProducts> OrderProducts { get; set; }
+        public DbSet<ApplicationRole> ApplicationRoles { get; set; }
 
     }
 }

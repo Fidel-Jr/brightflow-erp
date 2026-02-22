@@ -6,5 +6,7 @@ namespace asp_backend.DTOs
     {
         [Required]
         public string Role { get; set; }
+        [Required]
+        public string Description { get; set; }
     }
 }

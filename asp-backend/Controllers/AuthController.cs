@@ -15,8 +15,8 @@ namespace asp_backend.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly JwtService _jwtService;
-        public static RoleManager<IdentityRole> _roleManager;
-        public AuthController(UserManager<ApplicationUser> userManager, JwtService jwtService, RoleManager<IdentityRole> roleManager)
+        public static RoleManager<ApplicationRole> _roleManager;
+        public AuthController(UserManager<ApplicationUser> userManager, JwtService jwtService, RoleManager<ApplicationRole> roleManager)
         {
             _userManager = userManager;
             _jwtService = jwtService;
@@ -90,9 +90,16 @@ namespace asp_backend.Controllers
                 });
 
             const string defaultRole = "WStaff"; // or Staff
+            if (!await _roleManager.RoleExistsAsync(defaultRole))
+            {
+                var role = new ApplicationRole
+                {
+                    Name = defaultRole,
+                    NormalizedName = defaultRole.ToUpper()
+                };
 
-            if (!await  _roleManager.RoleExistsAsync(defaultRole))
-                await _roleManager.CreateAsync(new IdentityRole(defaultRole));
+                await _roleManager.CreateAsync(role);
+            }
 
             await _userManager.AddToRoleAsync(user, defaultRole);
 
