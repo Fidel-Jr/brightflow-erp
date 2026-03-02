@@ -29,7 +29,7 @@ BrightFlow ERP aims to:
 - Ensure secure, role-based access to sensitive data  
 
 **Scope:** Core ERP modules (Users/Roles, Inventory, Orders, Deliveries)  
-**Excluded for MVP:** AI/ML, accounting, client portal  
+**Excluded for MVP:** AI/ML, accounting, notification, client, driver and warehouse staffs portal
 
 > Note: This project is **still ongoing** and actively under development.
 
@@ -41,14 +41,16 @@ BrightFlow ERP aims to:
 - ASP.NET Core Web API  
 - User & Role management (using Identity)  
 - JWT authentication & role-based access  
-- CRUD APIs for Users and Roles  
+- CRUD APIs for Users and Roles
+- **OpenRouteService integration** for geocoding, routing, distance calculation, and estimating duration/ETA when creating or processing orders 
 
 ### Frontend
 - React application with React Router  
 - AuthContext for JWT and user info  
 - Login page & role-based protected routes  
 - Initial UserManagement and RoleManagement pages (WIP)  
-- Navbar & Sidebar layout with role-based menu visibility  
+- Navbar & Sidebar layout with role-based menu visibility
+- **OpenStreetMap** for map-based address selection when creating orders 
 
 ---
 
@@ -61,7 +63,7 @@ BrightFlow ERP aims to:
 | Warehouse Staff | View Inventory; update stock; view & process assigned orders                         |
 | Delivery Staff  | View & update assigned deliveries only                                               |
 
-> Roles are enforced both in backend (API authorization) and frontend (role-based UI menus).
+> Roles are enforced both in backend (API authorization) and frontend (role-based UI menus) - This feature will be implemented in the future.
 
 ---
 
@@ -125,10 +127,10 @@ ConnectionStrings:DefaultConnection → PostgreSQL database connection
 | Auth (JWT + Identity)   | ✅ Completed                                |
 | User & Role Management  | ✅ Backend complete, Frontend Initial (WIP) |
 | Navbar & Sidebar Layout & Dashboard | ✅ Initial                                  |
-| Inventory Module        | ✅ For Review                                  |
-| Orders Module           | ⬜ Pending                                  |
-| Deliveries Module       | ⬜ Pending                                  |
+| Inventory Module        | ✅ Completed                                  |
+| Orders Module           | ✅ For Review                                  |
+| Deliveries Module       | ✅ For Review                                  |
 | Dashboard & Reports     | ⬜ Pending                                  |
 
-**Current phase:** Frontend and Backend development for Order Management, Layout refinement
+**Current phase:** Implemention of dashboard and reports
 
