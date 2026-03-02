@@ -21,7 +21,7 @@ const UserManagement = () => {
   const [modalMode, setModalMode] = useState('add');
   const [selectedUser, setSelectedUser] = useState(null);
 
-  const [users, setUsers] = useState([]); // fetched or mock users
+  const [users, setUsers] = useState([]);
 
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
@@ -34,33 +34,20 @@ const UserManagement = () => {
   const { user } = useAuth();
 
   const isAdmin = hasRole(user, "Admin");
-  const isManager = hasRole(user, "Manager");
-
   
-    // Fetch users from API (or use mock)
-    const handleViewDetails = (user) => {
-      setSelectedUser(user);
-      setShowDetailsModal(true);
-    };
+  // ✅ Fetch users from API
+  const fetchUsers = async () => {
+    try {
+      const response = await getUsers();
+      setUsers(response.data);
+    } catch (err) {
+      console.error('Failed to fetch users', err);
+    }
+  };
 
-
-    const fetchUsers = async () => {
-      try {
-        const response = await getUsers(); // or your API call
-        setUsers(response.data);
-      } catch (err) {
-        console.error('Failed to fetch users', err);
-        // fallback mock data
-        setUsers([
-          
-        ]);
-      }
-    };
-
-    useEffect(() => {
-      fetchUsers();
-    }, []);
-   
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   // Filter users based on search & role
   const filteredUsers = useMemo(() => {
@@ -92,52 +79,34 @@ const UserManagement = () => {
 
   const totalPages = Math.ceil(filteredUsers.length / pageSize);
 
-  // Modal handlers
+  // ✅ Modal handlers
   const handleOpenModal = (mode, user = null) => {
     setModalMode(mode);
     setSelectedUser(user);
     setShowModal(true);
   };
+
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedUser(null);
-    
   };
-  const handleSubmit = (formData) => {
-    if (modalMode === 'add') {
-      const newUser = {
-        id: users.length + 1,
-        username: formData.username,
-        email: formData.email,
-        role: formData.roles[0] || 'User',
-        roles: formData.roles,
-        status: formData.status,
-        avatar: formData.username.split(' ').map(n => n[0]).join('').toUpperCase(),
-        lastLogin: 'Never'
-      };
-      setUsers([...users, newUser]);
-    } else {
-      setUsers(users.map(u =>
-        u.id === selectedUser.id
-          ? { ...u, ...formData, avatar: formData.username.split(' ').map(n => n[0]).join('').toUpperCase() }
-          : u
-      ));
-    }
-    handleCloseModal();
+
+  // ✅ Removed handleSubmit - now handled inside UserModal
+
+  const handleViewDetails = (user) => {
+    setSelectedUser(user);
+    setShowDetailsModal(true);
   };
 
   const handleDelete = async (userId) => {
-
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
-        await deleteUser(userId); // API call to delete user
-        console.log('User deleted successfully');
+        await deleteUser(userId);
+        fetchUsers(); // Refresh list after delete
       } catch (error) {
         console.error('Error deleting user:', error);
         alert('Failed to delete user. Please try again.');
-        return;
       }
-      setUsers(users.filter(u => u.id !== userId));
     }
   };
 
@@ -164,10 +133,8 @@ const UserManagement = () => {
               </Col>
             </Row>
 
-            {/* Stats cards */}
             <UserStats users={users} />
 
-            {/* Filters */}
             <UserFilters
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
@@ -176,7 +143,6 @@ const UserManagement = () => {
               onAddUser={isAdmin ? () => handleOpenModal('add') : false}
             />
 
-            {/* Table */}
             <UserTable
               users={paginatedUsers}
               currentPage={currentPage}
@@ -194,17 +160,15 @@ const UserManagement = () => {
         </main>
       </div>
 
-      {/* Add/Edit modal */}
+      {/* ✅ Simplified props: onSuccess instead of onSubmit */}
       <UserModal
         show={showModal}
         mode={modalMode}
         user={selectedUser}
         onHide={handleCloseModal}
-        onSubmit={handleSubmit}
-        onSuccess={fetchUsers}
+        onSuccess={fetchUsers} // Just refresh the list
       />
 
-      {/* Details Modal */}
       <UserDetailsModal
         show={showDetailsModal}
         user={selectedUser}

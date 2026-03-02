@@ -53,10 +53,6 @@ const UserFilters = ({
               </Button>
             )}
             
-            <Button variant="outline-secondary">
-              <i className="bi bi-download me-2"></i>
-              Export
-            </Button>
           </Col>
         </Row>
       </Card.Body>

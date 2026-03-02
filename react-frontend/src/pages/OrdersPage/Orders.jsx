@@ -33,141 +33,14 @@ const Orders = () => {
 
   // Mock orders data
   const [orders, setOrders] = useState([
-    {
-      id: 1,
-      orderNumber: 'ORD-2024-001',
-      customer: {
-        name: 'John Doe',
-        email: 'john.doe@example.com',
-        phone: '+1 234 567 8900',
-        address: '123 Main St, New York, NY 10001'
-      },
-      products: [
-        { id: 1, name: 'Wireless Mouse', sku: 'WM-001', quantity: 2, price: 29.99 },
-        { id: 2, name: 'USB-C Cable', sku: 'UC-002', quantity: 3, price: 12.99 }
-      ],
-      status: 'Pending',
-      priority: 'High',
-      totalAmount: 98.95,
-      assignedWarehouse: 'Warehouse A',
-      assignedStaff: 'Sarah Wilson',
-      deliveryStaff: null,
-      createdAt: '2024-02-18T10:30:00',
-      updatedAt: '2024-02-18T10:30:00',
-      shippedAt: null,
-      deliveredAt: null,
-      estimatedDelivery: '2024-02-22',
-      notes: 'Customer requested gift wrapping'
-    },
-    {
-      id: 2,
-      orderNumber: 'ORD-2024-002',
-      customer: {
-        name: 'Sarah Anderson',
-        email: 'sarah.anderson@example.com',
-        phone: '+1 234 567 8901',
-        address: '456 Oak Ave, Los Angeles, CA 90001'
-      },
-      products: [
-        { id: 3, name: 'Office Chair', sku: 'OC-003', quantity: 1, price: 199.99 },
-        { id: 4, name: 'Laptop Stand', sku: 'LS-004', quantity: 1, price: 49.99 }
-      ],
-      status: 'Processing',
-      priority: 'Medium',
-      totalAmount: 249.98,
-      assignedWarehouse: 'Warehouse B',
-      assignedStaff: 'Mike Johnson',
-      deliveryStaff: null,
-      createdAt: '2024-02-17T14:20:00',
-      updatedAt: '2024-02-18T09:15:00',
-      shippedAt: null,
-      deliveredAt: null,
-      estimatedDelivery: '2024-02-21',
-      notes: ''
-    },
-    {
-      id: 3,
-      orderNumber: 'ORD-2024-003',
-      customer: {
-        name: 'Mike Johnson',
-        email: 'mike.j@example.com',
-        phone: '+1 234 567 8902',
-        address: '789 Pine Rd, Chicago, IL 60601'
-      },
-      products: [
-        { id: 5, name: 'Desk Lamp', sku: 'DL-005', quantity: 2, price: 34.99 }
-      ],
-      status: 'Shipped',
-      priority: 'Low',
-      totalAmount: 69.98,
-      assignedWarehouse: 'Warehouse A',
-      assignedStaff: 'Emily Davis',
-      deliveryStaff: 'Tom Brown',
-      createdAt: '2024-02-16T08:45:00',
-      updatedAt: '2024-02-17T16:30:00',
-      shippedAt: '2024-02-17T16:30:00',
-      deliveredAt: null,
-      estimatedDelivery: '2024-02-20',
-      notes: 'Fragile items - handle with care'
-    },
-    {
-      id: 4,
-      orderNumber: 'ORD-2024-004',
-      customer: {
-        name: 'Emily Wilson',
-        email: 'emily.w@example.com',
-        phone: '+1 234 567 8903',
-        address: '321 Elm St, Houston, TX 77001'
-      },
-      products: [
-        { id: 6, name: 'Mechanical Keyboard', sku: 'MK-006', quantity: 1, price: 89.99 },
-        { id: 1, name: 'Wireless Mouse', sku: 'WM-001', quantity: 1, price: 29.99 }
-      ],
-      status: 'Delivered',
-      priority: 'Medium',
-      totalAmount: 119.98,
-      assignedWarehouse: 'Warehouse A',
-      assignedStaff: 'Sarah Wilson',
-      deliveryStaff: 'James Miller',
-      createdAt: '2024-02-14T11:00:00',
-      updatedAt: '2024-02-16T14:20:00',
-      shippedAt: '2024-02-15T10:00:00',
-      deliveredAt: '2024-02-16T14:20:00',
-      estimatedDelivery: '2024-02-18',
-      notes: ''
-    },
-    {
-      id: 5,
-      orderNumber: 'ORD-2024-005',
-      customer: {
-        name: 'David Brown',
-        email: 'david.b@example.com',
-        phone: '+1 234 567 8904',
-        address: '555 Maple Dr, Phoenix, AZ 85001'
-      },
-      products: [
-        { id: 7, name: 'Notebook Set', sku: 'NS-007', quantity: 5, price: 15.99 }
-      ],
-      status: 'Processing',
-      priority: 'High',
-      totalAmount: 79.95,
-      assignedWarehouse: 'Warehouse C',
-      assignedStaff: 'Mike Johnson',
-      deliveryStaff: null,
-      createdAt: '2024-02-18T09:15:00',
-      updatedAt: '2024-02-18T11:00:00',
-      shippedAt: null,
-      deliveredAt: null,
-      estimatedDelivery: '2024-02-21',
-      notes: 'Bulk order for corporate client'
-    }
+    
   ]);
 
   const fetchOrders = async () => {
     try {
       const response = await getOrders();
       setOrders(response.data);
-      return response.data; // ✅ return fresh list
+      return response.data; // return orders for chaining
     } catch (err) {
       console.error('Failed to fetch orders', err);
       return [];
@@ -176,15 +49,11 @@ const Orders = () => {
 
   const fetchProducts = async () => {
       try {
-        const response = await getProducts(); // or your API call
+        const response = await getProducts();
         setProducts(response.data);
         console.log('Fetched products:', response.data);
       } catch (err) {
         console.error('Failed to fetch products', err);
-        // fallback mock data
-        setProducts([
-          
-        ]);
       }
   };
 

@@ -1,18 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Form, Button, Row, Col, Spinner } from 'react-bootstrap';
+import { Modal, Form, Button, Row, Col, Spinner, Alert } from 'react-bootstrap';
 import { createUser, updateUser } from '../../api/user-api';
 
 const UserModal = ({ show, mode, user, onHide, onSuccess }) => {
   const roles = ['Admin', 'Manager', 'Warehouse Staff', 'Delivery Staff'];
-  const [passwordError, setPasswordError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (!show) {
-      setPasswordError('');
-      setIsSubmitting(false);
-    }
-  }, [show]);
+  const [errors, setErrors] = useState({});
 
   const [formData, setFormData] = useState({
     username: '',
@@ -23,6 +16,13 @@ const UserModal = ({ show, mode, user, onHide, onSuccess }) => {
     status: 'Active',
     password: ''
   });
+
+  useEffect(() => {
+    if (!show) {
+      setIsSubmitting(false);
+      setErrors({});
+    }
+  }, [show]);
 
   useEffect(() => {
     if (mode === 'edit' && user) {
@@ -52,28 +52,32 @@ const UserModal = ({ show, mode, user, onHide, onSuccess }) => {
     const minLength = password.length > 6;
     const hasUppercase = /[A-Z]/.test(password);
     const hasNumber = /\d/.test(password);
-    const hasSpecialChar = /[_\W]/.test(password); // includes _ and other symbols
+    const hasSpecialChar = /[_\W]/.test(password);
 
     return minLength && hasUppercase && hasNumber && hasSpecialChar;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrors({}); // Clear previous errors
 
     if (isSubmitting) return;
 
-    // Validate password
-    if (
-      (mode === 'add' && !validatePassword(formData.password)) ||
-      (mode === 'edit' && formData.password && !validatePassword(formData.password))
-    ) {
-      setPasswordError(
-        'Password must be longer than 6 characters, include 1 uppercase letter, 1 number, and 1 special character (e.g. _)'
-      );
+    // ✅ Client-side password validation
+    if (mode === 'add' && !validatePassword(formData.password)) {
+      setErrors({
+        password: 'Password must be longer than 6 characters, include 1 uppercase letter, 1 number, and 1 special character (e.g. _)'
+      });
       return;
     }
 
-    setPasswordError('');
+    if (mode === 'edit' && formData.password && !validatePassword(formData.password)) {
+      setErrors({
+        password: 'Password must be longer than 6 characters, include 1 uppercase letter, 1 number, and 1 special character (e.g. _)'
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -86,15 +90,24 @@ const UserModal = ({ show, mode, user, onHide, onSuccess }) => {
         });
       }
 
-      onSuccess();
-      onHide();
+      onSuccess(); // ✅ Refresh user list in parent
+      onHide(); // Close modal
     } catch (error) {
       console.error(`Error ${mode === 'add' ? 'creating' : 'updating'} user:`, error);
+      
+      const errorData = error.response?.data?.errors;
+      
+      if (typeof errorData === 'string') {
+        setErrors({ general: errorData });
+      } else if (typeof errorData === 'object') {
+        setErrors(errorData);
+      } else {
+        setErrors({ general: 'An error occurred. Please try again.' });
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
-
 
   return (
     <Modal
@@ -112,6 +125,13 @@ const UserModal = ({ show, mode, user, onHide, onSuccess }) => {
       </Modal.Header>
       <Form onSubmit={handleSubmit}>
         <Modal.Body className="p-4">
+          {/* General error alert */}
+          {errors.general && (
+            <Alert variant="danger" dismissible onClose={() => setErrors({})}>
+              {errors.general}
+            </Alert>
+          )}
+
           <Row className="g-3">
             <Col md={6}>
               <Form.Group>
@@ -123,7 +143,11 @@ const UserModal = ({ show, mode, user, onHide, onSuccess }) => {
                   onChange={(e) => setFormData({...formData, username: e.target.value})}
                   required
                   disabled={isSubmitting}
+                  isInvalid={!!errors.username}
                 />
+                <Form.Control.Feedback type="invalid">
+                  {errors.username}
+                </Form.Control.Feedback>
               </Form.Group>
             </Col>
 
@@ -137,35 +161,43 @@ const UserModal = ({ show, mode, user, onHide, onSuccess }) => {
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
                   required
                   disabled={isSubmitting}
+                  isInvalid={!!errors.email}
                 />
+                <Form.Control.Feedback type="invalid">
+                  {errors.email}
+                </Form.Control.Feedback>
               </Form.Group>
             </Col>
 
-            <Col md={6}>
-              <Form.Group>
-                <Form.Label className="fw-semibold">Full Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter full name"
-                  value={formData.fullName}
-                  onChange={(e) => setFormData({...formData, fullName: e.target.value})}
-                  disabled={isSubmitting}
-                />
-              </Form.Group>
-            </Col>
+            {mode === 'edit' && (
+              <>
+                <Col md={6}>
+                  <Form.Group>
+                    <Form.Label className="fw-semibold">Full Name</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Enter full name"
+                      value={formData.fullName}
+                      onChange={(e) => setFormData({...formData, fullName: e.target.value})}
+                      disabled={isSubmitting}
+                    />
+                  </Form.Group>
+                </Col>
 
-            <Col md={6}>
-              <Form.Group>
-                <Form.Label className="fw-semibold">Phone Number</Form.Label>
-                <Form.Control
-                  type="tel"
-                  placeholder="Enter phone number"
-                  value={formData.phoneNumber}
-                  onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})}
-                  disabled={isSubmitting}
-                />
-              </Form.Group>
-            </Col>
+                <Col md={6}>
+                  <Form.Group>
+                    <Form.Label className="fw-semibold">Phone Number</Form.Label>
+                    <Form.Control
+                      type="tel"
+                      placeholder="Enter phone number"
+                      value={formData.phoneNumber}
+                      onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})}
+                      disabled={isSubmitting}
+                    />
+                  </Form.Group>
+                </Col>
+              </>
+            )}
 
             <Col md={6}>
               <Form.Group>
@@ -191,6 +223,11 @@ const UserModal = ({ show, mode, user, onHide, onSuccess }) => {
                     );
                   })}
                 </div>
+                {errors.roles && (
+                  <Form.Text className="text-danger">
+                    {errors.roles}
+                  </Form.Text>
+                )}
               </Form.Group>
             </Col>
 
@@ -213,24 +250,19 @@ const UserModal = ({ show, mode, user, onHide, onSuccess }) => {
                 <Form.Label className="fw-semibold">
                   Password {mode === 'edit' && '(leave blank to keep current)'}
                 </Form.Label>
-
                 <Form.Control
                   type="password"
                   placeholder="Enter password"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   required={mode === 'add'}
-                  isInvalid={!!passwordError}
+                  isInvalid={!!errors.password}
                   disabled={isSubmitting}
                 />
-
-                {passwordError && (
-                  <Form.Control.Feedback type="invalid">
-                    {passwordError}
-                  </Form.Control.Feedback>
-                )}
+                <Form.Control.Feedback type="invalid">
+                  {errors.password}
+                </Form.Control.Feedback>
               </Form.Group>
-
             </Col>
           </Row>
         </Modal.Body>

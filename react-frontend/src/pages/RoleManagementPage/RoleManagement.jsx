@@ -150,24 +150,7 @@ const RoleManagementPage = () => {
   };
 
   const handleSubmit = (formData) => {
-    // if (modalMode === 'add') {
-    //   const newRole = {
-    //     id: roles.length + 1,
-    //     name: formData.name,
-    //     description: formData.description,
-    //     color: formData.color,
-    //     userCount: 0,
-    //     permissions: formData.permissions,
-    //     createdAt: new Date().toISOString().split('T')[0]
-    //   };
-    //   setRoles([...roles, newRole]);
-    // } else {
-    //   setRoles(roles.map(role => 
-    //     role.id === selectedRole.id 
-    //       ? { ...role, ...formData }
-    //       : role
-    //   ));
-    // }
+    
     handleCloseModal();
     fetchRoles(); // Refresh roles after add/edit
   };
