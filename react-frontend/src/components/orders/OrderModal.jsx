@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Form, Button, Row, Col, InputGroup, Table, Badge } from 'react-bootstrap';
-import { createOrder, updateOrder } from '../../api/order-api';
+import { Modal, Form, Button, Row, Col, InputGroup, Table, Badge, Spinner } from 'react-bootstrap';
+import { createOrder, updateOrder, getWarehouseLocation } from '../../api/order-api';
+import { createDelivery } from '../../api/delivery-api';
+import MapComponent from './MapComponent';
+import { DEFAULT_WAREHOUSE_LOCATION } from '../../config/warehouse';
 
 const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) => {
 
@@ -9,7 +12,9 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
       name: '',
       email: '',
       phone: '',
-      address: ''
+      address: '',
+      customerLat: null,
+      customerLng: null
     },
     products: [],
     status: 'Pending',
@@ -20,6 +25,10 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
   };
 
   const [formData, setFormData] = useState(initialState);
+  const [showMap, setShowMap] = useState(false);
+  const [warehouse, setWarehouse] = useState(null);
+  const [isWarehouseLoading, setIsWarehouseLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   console.log("Staffs: ", staffs);
 
@@ -35,10 +44,95 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
   const staffMembers = staffs;
   console.log("Available Products: ", availableProducts)
 
+  const warehouseLat = warehouse?.lat != null ? Number(warehouse.lat) : Number(DEFAULT_WAREHOUSE_LOCATION.lat);
+  const warehouseLng = warehouse?.lng != null ? Number(warehouse.lng) : Number(DEFAULT_WAREHOUSE_LOCATION.lng);
+  const hasWarehouseLocation = Number.isFinite(warehouseLat) && Number.isFinite(warehouseLng);
+  const warehouseLocation = hasWarehouseLocation ? { lat: warehouseLat, lng: warehouseLng } : null;
+
+  useEffect(() => {
+    if (!show) return;
+
+    setIsWarehouseLoading(true);
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await getWarehouseLocation();
+        if (!cancelled) {
+          setWarehouse(res.data);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setWarehouse(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsWarehouseLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [show]);
+
+  useEffect(() => {
+    if (!show) {
+      setIsSubmitting(false);
+      setIsWarehouseLoading(false);
+    }
+  }, [show]);
+
+  const setCustomerFromMap = (partialCustomer) => {
+    setFormData(prev => ({
+      ...prev,
+      customer: {
+        ...prev.customer,
+        ...partialCustomer
+      }
+    }));
+  };
+
+  const setAddressFromMap = (address) => {
+    setFormData(prev => ({
+      ...prev,
+      customer: {
+        ...prev.customer,
+        address
+      }
+    }));
+  };
+
   useEffect(() => {
     if (mode === 'edit' && order) {
+      const rawCustomerLat =
+        order?.customer?.customerLat ??
+        order?.customer?.latitude ??
+        order?.customer?.Latitude ??
+        null;
+
+      const rawCustomerLng =
+        order?.customer?.customerLng ??
+        order?.customer?.longitude ??
+        order?.customer?.Longitude ??
+        null;
+
+      const parsedCustomerLat = rawCustomerLat == null ? null : Number(rawCustomerLat);
+      const parsedCustomerLng = rawCustomerLng == null ? null : Number(rawCustomerLng);
+
+      const customerLat = Number.isFinite(parsedCustomerLat) ? parsedCustomerLat : null;
+      const customerLng = Number.isFinite(parsedCustomerLng) ? parsedCustomerLng : null;
+
       setFormData({
-        customer: { ...order.customer },
+        customer: {
+          name: order?.customer?.name ?? order?.customer?.Name ?? '',
+          email: order?.customer?.email ?? order?.customer?.Email ?? '',
+          phone: order?.customer?.phone ?? order?.customer?.Phone ?? '',
+          address: order?.customer?.address ?? order?.customer?.Address ?? '',
+          customerLat,
+          customerLng
+        },
         products: order.products,
         status: order.status,
         priorityLevel: order.priorityLevel,
@@ -46,8 +140,12 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
         estimatedDelivery: order.estimatedDelivery?.split("T")[0],
         notes: order.notes || ''
       });
+
+      const hasCustomerLocation = Number.isFinite(customerLat) && Number.isFinite(customerLng);
+      setShowMap(hasCustomerLocation);
     } else {
       setFormData(initialState);
+      setShowMap(false);
     }
   }, [mode, order, show]);
 
@@ -56,6 +154,8 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
     customerEmail: formData.customer.email,
     customerPhone: formData.customer.phone,
     customerAddress: formData.customer.address,
+    customerLat: formData.customer.customerLat,
+    customerLng: formData.customer.customerLng,
     products: formData.products.map(product => ({
       productId: product.id,
       quantity: product.quantity,
@@ -70,25 +170,53 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
     try {
+        let createdOrderNumber = null;
+
         if (mode === "add") {
-          await createOrder(payload);
+          const response = await createOrder(payload);
+          createdOrderNumber = response?.data?.orderNumber ?? response?.data?.OrderNumber ?? null;
           console.log("Data to be Added!", payload)
+          
         } else {
-          // product.id comes from the prop passed to the modal
-          await updateOrder(order.id, payload);
-          console.log("Data to be Updated!", payload)
-        }
+            // If moving to delivery
+            if (payload.status === "ForDelivery") {
+              const confirmMove = window.confirm(
+                "Move to delivery? This order is done processing and ready for delivery."
+              );
+
+              if (!confirmMove) return;
+
+              try {
+                const deliveryPayload = {
+                  orderId: order.id,
+                  notes: payload.notes
+                };
+
+                await createDelivery(deliveryPayload);
+                console.log("Delivery created successfully");
+              } catch (error) {
+                console.error("Error creating delivery:", error);
+                alert("Failed to create delivery. Please try again.");
+                return;
+              }
+            }
+
+            // Update order AFTER delivery succeeds
+            await updateOrder(order.id, payload);
+            console.log("Data updated!", payload);
+          }
   
-        onSubmit(); // Triggers the parent to refresh the list
+        onSubmit(createdOrderNumber); // Triggers the parent to refresh the list
         onHide();    // Closes the modal
       } catch (error) {
-          console.log(error.response.data.errors)
-        
+          console.log(error?.response?.data?.errors ?? error);
+      } finally {
+        setIsSubmitting(false);
       }
-
-    // const totalAmount = formData.products.reduce((sum, p) => sum + (p.price * p.quantity), 0);
-    // onSubmit({ ...formData, totalAmount });
   };
 
 
@@ -142,7 +270,14 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
   };
   // console.log("Customer Name: ",formData.customer.name)
   return (
-    <Modal show={show} onHide={onHide} centered size="xl">
+    <Modal
+      show={show}
+      onHide={onHide}
+      centered
+      size="xl"
+      backdrop={isSubmitting ? 'static' : true}
+      keyboard={!isSubmitting}
+    >
       <Modal.Header closeButton>
         <Modal.Title className="fw-bold">
           {mode === 'add' ? 'Create New Order' : 'Edit Order'}
@@ -172,6 +307,7 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
                     customer: { ...formData.customer, name: e.target.value }
                   })}
                   required
+                  disabled={isSubmitting}
                 />
               </Form.Group>
             </Col>
@@ -190,6 +326,7 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
                     customer: { ...formData.customer, email: e.target.value }
                   })}
                   required
+                  disabled={isSubmitting}
                 />
               </Form.Group>
             </Col>
@@ -208,6 +345,7 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
                     customer: { ...formData.customer, phone: e.target.value }
                   })}
                   required
+                  disabled={isSubmitting}
                 />
               </Form.Group>
             </Col>
@@ -226,7 +364,38 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
                     customer: { ...formData.customer, address: e.target.value }
                   })}
                   required
+                  disabled={isSubmitting}
                 />
+
+                <div className="d-flex align-items-center justify-content-between mt-2">
+                  <Form.Check
+                    type="switch"
+                    id="toggle-order-map"
+                    label="Use map"
+                    checked={showMap}
+                    onChange={(e) => setShowMap(e.target.checked)}
+                    disabled={isSubmitting || isWarehouseLoading || !hasWarehouseLocation}
+                  />
+                  {isWarehouseLoading && (
+                    <small className="text-muted">Loading warehouse location...</small>
+                  )}
+                  {!isWarehouseLoading && !hasWarehouseLocation && (
+                    <small className="text-muted">
+                      Warehouse location unavailable
+                    </small>
+                  )}
+                </div>
+
+                {showMap && warehouseLocation && (
+                  <div className="mt-2">
+                    <MapComponent
+                      warehouse={warehouseLocation}
+                      customer={formData.customer}
+                      setCustomer={setCustomerFromMap}
+                      setAddress={setAddressFromMap}
+                    />
+                  </div>
+                )}
               </Form.Group>
             </Col>
 
@@ -243,6 +412,7 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
                   <Form.Select
                     value={selectedProduct}
                     onChange={(e) => setSelectedProduct(e.target.value)}
+                    disabled={isSubmitting}
                   >
                     <option value="">Select product...</option>
                     {availableProducts.map(product => (
@@ -259,6 +429,7 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
                     placeholder="Qty"
                     value={productQuantity}
                     onChange={(e) => setProductQuantity(parseInt(e.target.value) || 1)}
+                    disabled={isSubmitting}
                   />
                 </Col>
                 <Col md={3}>
@@ -266,6 +437,7 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
                     variant="primary" 
                     onClick={handleAddProduct}
                     className="w-100"
+                    disabled={isSubmitting}
                   >
                     <i className="bi bi-plus-circle me-2"></i>
                     Add
@@ -297,6 +469,7 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
                             value={product.quantity}
                             onChange={(e) => handleQuantityChange(product.id, e.target.value)}
                             size="sm"
+                            disabled={isSubmitting}
                           />
                         </td>
                         <td>${product.price.toFixed(2)}</td>
@@ -306,6 +479,7 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
                             variant="link"
                             className="text-danger p-0"
                             onClick={() => handleRemoveProduct(product.id)}
+                            disabled={isSubmitting}
                           >
                             <i className="bi bi-trash"></i>
                           </Button>
@@ -340,11 +514,11 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
                 <Form.Select
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                  disabled={isSubmitting}
                 >
                   <option value="Pending">Pending</option>
                   <option value="Processing">Processing</option>
-                  <option value="Shipped">Shipped</option>
-                  <option value="Delivered">Delivered</option>
+                  <option value="ForDelivery">For Delivery</option>
                 </Form.Select>
               </Form.Group>
             </Col>
@@ -355,6 +529,7 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
                 <Form.Select
                   value={formData.priorityLevel}
                   onChange={(e) => setFormData({ ...formData, priorityLevel: e.target.value })}
+                  disabled={isSubmitting}
                 >
                   <option value="Low">Low</option>
                   <option value="Medium">Medium</option>
@@ -373,27 +548,10 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
                   value={formData.estimatedDelivery}
                   onChange={(e) => setFormData({ ...formData, estimatedDelivery: e.target.value })}
                   required
+                  disabled={isSubmitting}
                 />
               </Form.Group>
             </Col>
-
-            {/* <Col md={6}>
-              <Form.Group>
-                <Form.Label className="fw-semibold">
-                  Assign Warehouse <span className="text-danger">*</span>
-                </Form.Label>
-                <Form.Select
-                  value={formData.assignedWarehouse}
-                  onChange={(e) => setFormData({ ...formData, assignedWarehouse: e.target.value })}
-                  required
-                >
-                  <option value="">Select warehouse...</option>
-                  {warehouses.map(warehouse => (
-                    <option key={warehouse} value={warehouse}>{warehouse}</option>
-                  ))}
-                </Form.Select>
-              </Form.Group>
-            </Col> */}
 
             <Col md={6}>
               <Form.Group>
@@ -404,6 +562,7 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
                   value={formData.assignedStaffId}
                   onChange={(e) => setFormData({ ...formData, assignedStaffId: e.target.value })}
                   required
+                  disabled={isSubmitting}
                 >
                   <option value="">Select staff member...</option>
                   {staffMembers.map(staff => (
@@ -412,23 +571,6 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
                 </Form.Select>
               </Form.Group>
             </Col>
-
-            {/* {(formData.status === 'Shipped' || formData.status === 'Delivered') && (
-              <Col md={6}>
-                <Form.Group>
-                  <Form.Label className="fw-semibold">Delivery Staff</Form.Label>
-                  <Form.Select
-                    value={formData.deliveryStaff}
-                    onChange={(e) => setFormData({ ...formData, deliveryStaff: e.target.value })}
-                  >
-                    <option value="">Select delivery staff...</option>
-                    {staffMembers.map(staff => (
-                      <option key={staff.id} value={staff.id}>{staff.userName}</option>
-                    ))}
-                  </Form.Select>
-                </Form.Group>
-              </Col>
-            )} */}
 
             <Col md={6}>
               <Form.Group>
@@ -439,17 +581,34 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
                   placeholder="Add any special instructions or notes..."
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  disabled={isSubmitting}
                 />
               </Form.Group>
             </Col>
           </Row>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={onHide}>
+          <Button variant="secondary" onClick={onHide} disabled={isSubmitting}>
             Cancel
           </Button>
-          <Button variant="primary" type="submit" disabled={formData.products.length === 0}>
-            {mode === 'add' ? 'Create Order' : 'Save Changes'}
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={isSubmitting || formData.products.length === 0}
+          >
+            {isSubmitting && (
+              <Spinner
+                as="span"
+                animation="border"
+                size="sm"
+                role="status"
+                aria-hidden="true"
+                className="me-2"
+              />
+            )}
+            {isSubmitting
+              ? (mode === 'add' ? 'Creating...' : 'Saving...')
+              : (mode === 'add' ? 'Create Order' : 'Save Changes')}
           </Button>
         </Modal.Footer>
       </Form>

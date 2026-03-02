@@ -1,20 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Form, Button, Row, Col } from 'react-bootstrap';
+import { Modal, Form, Button, Row, Col, Spinner } from 'react-bootstrap';
 import { createUser, updateUser } from '../../api/user-api';
 
 const UserModal = ({ show, mode, user, onHide, onSuccess }) => {
   const roles = ['Admin', 'Manager', 'Warehouse Staff', 'Delivery Staff'];
   const [passwordError, setPasswordError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (!show) {
       setPasswordError('');
+      setIsSubmitting(false);
     }
   }, [show]);
 
   const [formData, setFormData] = useState({
     username: '',
     email: '',
+    fullName: '',
+    phoneNumber: '',
     roles: [],
     status: 'Active',
     password: ''
@@ -25,6 +29,8 @@ const UserModal = ({ show, mode, user, onHide, onSuccess }) => {
       setFormData({
         username: user.username,
         email: user.email,
+        fullName: user.fullName || '',
+        phoneNumber: user.phoneNumber || '',
         roles: user.roles || [],
         status: user.status,
         password: ''
@@ -33,6 +39,8 @@ const UserModal = ({ show, mode, user, onHide, onSuccess }) => {
       setFormData({
         username: '',
         email: '',
+        fullName: '',
+        phoneNumber: '',
         roles: [],
         status: 'Active',
         password: ''
@@ -52,6 +60,8 @@ const UserModal = ({ show, mode, user, onHide, onSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (isSubmitting) return;
+
     // Validate password
     if (
       (mode === 'add' && !validatePassword(formData.password)) ||
@@ -64,6 +74,7 @@ const UserModal = ({ show, mode, user, onHide, onSuccess }) => {
     }
 
     setPasswordError('');
+    setIsSubmitting(true);
 
     try {
       if (mode === 'add') {
@@ -79,12 +90,21 @@ const UserModal = ({ show, mode, user, onHide, onSuccess }) => {
       onHide();
     } catch (error) {
       console.error(`Error ${mode === 'add' ? 'creating' : 'updating'} user:`, error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
 
   return (
-    <Modal show={show} onHide={onHide} centered size="lg">
+    <Modal
+      show={show}
+      onHide={onHide}
+      centered
+      size="lg"
+      backdrop={isSubmitting ? 'static' : true}
+      keyboard={!isSubmitting}
+    >
       <Modal.Header closeButton>
         <Modal.Title className="fw-bold">
           {mode === 'add' ? 'Add New User' : 'Edit User'}
@@ -102,6 +122,7 @@ const UserModal = ({ show, mode, user, onHide, onSuccess }) => {
                   value={formData.username}
                   onChange={(e) => setFormData({...formData, username: e.target.value})}
                   required
+                  disabled={isSubmitting}
                 />
               </Form.Group>
             </Col>
@@ -115,6 +136,33 @@ const UserModal = ({ show, mode, user, onHide, onSuccess }) => {
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
                   required
+                  disabled={isSubmitting}
+                />
+              </Form.Group>
+            </Col>
+
+            <Col md={6}>
+              <Form.Group>
+                <Form.Label className="fw-semibold">Full Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter full name"
+                  value={formData.fullName}
+                  onChange={(e) => setFormData({...formData, fullName: e.target.value})}
+                  disabled={isSubmitting}
+                />
+              </Form.Group>
+            </Col>
+
+            <Col md={6}>
+              <Form.Group>
+                <Form.Label className="fw-semibold">Phone Number</Form.Label>
+                <Form.Control
+                  type="tel"
+                  placeholder="Enter phone number"
+                  value={formData.phoneNumber}
+                  onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})}
+                  disabled={isSubmitting}
                 />
               </Form.Group>
             </Col>
@@ -130,6 +178,7 @@ const UserModal = ({ show, mode, user, onHide, onSuccess }) => {
                         key={role}
                         variant={isSelected ? "primary" : "outline-secondary"}
                         size="sm"
+                        disabled={isSubmitting}
                         onClick={() => {
                           const updatedRoles = isSelected
                             ? formData.roles.filter(r => r !== role)
@@ -151,6 +200,7 @@ const UserModal = ({ show, mode, user, onHide, onSuccess }) => {
                 <Form.Select
                   value={formData.status}
                   onChange={(e) => setFormData({...formData, status: e.target.value})}
+                  disabled={isSubmitting}
                 >
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive</option>
@@ -171,6 +221,7 @@ const UserModal = ({ show, mode, user, onHide, onSuccess }) => {
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   required={mode === 'add'}
                   isInvalid={!!passwordError}
+                  disabled={isSubmitting}
                 />
 
                 {passwordError && (
@@ -184,11 +235,23 @@ const UserModal = ({ show, mode, user, onHide, onSuccess }) => {
           </Row>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={onHide}>
+          <Button variant="secondary" onClick={onHide} disabled={isSubmitting}>
             Cancel
           </Button>
-          <Button variant="primary" type="submit">
-            {mode === 'add' ? 'Add User' : 'Save Changes'}
+          <Button variant="primary" type="submit" disabled={isSubmitting}>
+            {isSubmitting && (
+              <Spinner
+                as="span"
+                animation="border"
+                size="sm"
+                role="status"
+                aria-hidden="true"
+                className="me-2"
+              />
+            )}
+            {isSubmitting
+              ? (mode === 'add' ? 'Adding...' : 'Saving...')
+              : (mode === 'add' ? 'Add User' : 'Save Changes')}
           </Button>
         </Modal.Footer>
       </Form>

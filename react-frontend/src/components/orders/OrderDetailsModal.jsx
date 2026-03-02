@@ -1,16 +1,67 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Button, Row, Col, Badge, ListGroup, Table, Card } from 'react-bootstrap';
 import OrderStatusTimeline from './OrderStatusTimeline';
 import { formatSmartDateTime } from '../../helper/formatPrettyDateTime';
+import { getDeliveries } from '../../api/delivery-api';
 
 const OrderDetailsModal = ({ show, order, onHide, onEdit, onStatusUpdate }) => {
   if (!order) return null;
+
+  const [assignedDriver, setAssignedDriver] = useState(null);
+  const [linkedDelivery, setLinkedDelivery] = useState(null);
+
+  useEffect(() => {
+    if (!show || !order?.orderNumber) {
+      setAssignedDriver(null);
+      setLinkedDelivery(null);
+      return;
+    }
+
+    let isCancelled = false;
+
+    (async () => {
+      try {
+        const response = await getDeliveries();
+        const deliveries = response?.data ?? [];
+        const matchedDelivery = deliveries.find(
+          (d) => d?.orderDetails?.orderNumber === order.orderNumber
+        );
+
+        if (isCancelled) return;
+
+        setLinkedDelivery(matchedDelivery ?? null);
+
+        const normalizedStatus = String(order.status ?? '')
+          .replace(/\s+/g, '')
+          .replace(/_/g, '')
+          .toLowerCase();
+        const isAssignedOrBeyond = ['assigned', 'intransit', 'delivered'].includes(normalizedStatus);
+
+        const driverDetails = isAssignedOrBeyond ? (matchedDelivery?.driverDetails ?? null) : null;
+        setAssignedDriver(driverDetails);
+      } catch (error) {
+        if (!isCancelled) {
+          console.error('Failed to lookup assigned driver:', error);
+          setAssignedDriver(null);
+          setLinkedDelivery(null);
+        }
+      }
+    })();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [show, order?.orderNumber, order?.status]);
 
   const getStatusColor = (status) => {
     const colors = {
       'Pending': 'warning',
       'Processing': 'info',
-      'Shipped': 'primary',
+      'For Delivery': 'success',
+      'ForDelivery': 'success',
+      'Assigned': 'info',
+      'In Transit': 'primary',
+      'InTransit': 'primary',
       'Delivered': 'success'
     };
     return colors[status] || 'secondary'; 
@@ -64,6 +115,18 @@ const OrderDetailsModal = ({ show, order, onHide, onEdit, onStatusUpdate }) => {
                 <p className="text-muted mb-0">
                   <i className="bi bi-truck me-2"></i>
                   Expected Delivery: {order.estimatedDelivery}
+                </p>
+              )}
+              {order.customer.distanceKm && (
+                <p className="text-muted mb-0">
+                  <i className="bi bi-truck me-2"></i>
+                  Distance: {order.customer.distanceKm.toFixed(2)}km
+                </p>
+              )}
+              {order.customer.durationMinutes && (
+                <p className="text-muted mb-0">
+                  <i className="bi bi-clock me-2"></i>
+                  Duration: {order.customer.durationMinutes.toFixed(0)} mins
                 </p>
               )}
             </Col>
@@ -171,6 +234,22 @@ const OrderDetailsModal = ({ show, order, onHide, onEdit, onStatusUpdate }) => {
                     </Col>
                   </Row>
                 </ListGroup.Item>
+
+                {order.status === 'Assigned' && (
+                  <ListGroup.Item className="px-0 py-3 border-bottom">
+                    <Row>
+                      <Col xs={4} className="text-muted">
+                        <i className="bi bi-truck me-2"></i>
+                        Assigned Driver:
+                      </Col>
+                      <Col xs={8}>
+                        <span className="fw-semibold">
+                          {assignedDriver?.userName || 'Unassigned'}
+                        </span>
+                      </Col>
+                    </Row>
+                  </ListGroup.Item>
+                )}
                 {order.deliveryStaff && (
                   <ListGroup.Item className="px-0 py-3">
                     <Row>
@@ -208,23 +287,25 @@ const OrderDetailsModal = ({ show, order, onHide, onEdit, onStatusUpdate }) => {
               <h6 className="fw-bold mb-4 text-uppercase text-muted" style={{ fontSize: '0.75rem' }}>
                 Order Timeline
               </h6>
-              <OrderStatusTimeline order={order} />
+              <OrderStatusTimeline order={order} delivery={linkedDelivery} />
             </div>
           </Col>
         </Row>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="outline-primary">
+        {/* <Button variant="outline-primary">
           <i className="bi bi-printer me-2"></i>
           Print Invoice
-        </Button>
+        </Button> */}
         <Button variant="secondary" onClick={onHide}>
           Close
         </Button>
-        <Button variant="primary" onClick={() => onEdit(order)}>
-          <i className="bi bi-pencil me-2"></i>
-          Edit Order
-        </Button>
+        {typeof onEdit === 'function' && (
+          <Button variant="primary" onClick={() => onEdit(order)}>
+            <i className="bi bi-pencil me-2"></i>
+            Edit Order
+          </Button>
+        )}
       </Modal.Footer>
     </Modal>
   );

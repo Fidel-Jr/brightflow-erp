@@ -5,7 +5,7 @@ import TopNavbar from '../../components/navbar/TopNavbar';
 import RoleStats from '../../components/role/RoleStats';
 import RoleGrid from '../../components/role/RoleGrid';
 import RoleModal from '../../components/role/RoleModal';
-import { getRoles } from '../../api/role-api';
+import { getRoles, deleteRole } from '../../api/role-api';
 
 const RoleManagementPage = () => {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -17,66 +17,7 @@ const RoleManagementPage = () => {
   
 
   const [roles, setRoles] = useState([
-    {
-      id: 1,
-      name: 'Admin',
-      description: 'Full system access with all permissions',
-      userCount: 2,
-      color: 'danger',
-      permissions: {
-        users: ['create', 'read', 'update', 'delete'],
-        roles: ['create', 'read', 'update', 'delete'],
-        content: ['create', 'read', 'update', 'delete'],
-        settings: ['read', 'update'],
-        reports: ['read', 'export']
-      },
-      createdAt: '2024-01-01'
-    },
-    {
-      id: 2,
-      name: 'Manager',
-      description: 'Can manage content and view reports',
-      userCount: 5,
-      color: 'primary',
-      permissions: {
-        users: ['read'],
-        roles: [],
-        content: ['create', 'read', 'update', 'delete'],
-        settings: ['read'],
-        reports: ['read']
-      },
-      createdAt: '2024-01-01'
-    },
-    {
-      id: 3,
-      name: 'Warehouse Staff',
-      description: 'Read-only access to content',
-      userCount: 8,
-      color: 'info',
-      permissions: {
-        users: [],
-        roles: [],
-        content: ['read'],
-        settings: [],
-        reports: ['read']
-      },
-      createdAt: '2024-01-01'
-    },
-    {
-      id: 4,
-      name: 'Delivery Staff',
-      description: 'Can manage users and content',
-      userCount: 3,
-      color: 'warning',
-      permissions: {
-        users: ['create', 'read', 'update'],
-        roles: ['read'],
-        content: ['create', 'read', 'update', 'delete'],
-        settings: ['read'],
-        reports: ['read', 'export']
-      },
-      createdAt: '2024-01-15'
-    }
+    
   ]);
 
   const permissionModules = [
@@ -156,8 +97,7 @@ const RoleManagementPage = () => {
       defaultPermissions[mod.name] = []; // start with empty actions
   });
 
-  useEffect(() => {
-    const fetchRoles = async () => {
+  const fetchRoles = async () => {
       try {
         const response = await getRoles();
         console.log('Fetched roles:', response.data);
@@ -165,9 +105,9 @@ const RoleManagementPage = () => {
         // Map the API roles to full role objects
         const rolesData = (Array.isArray(response.data) ? response.data : response.data?.roles || [])
           .map((r, index) => ({
-            id: index + 1, // fallback id
+            id: r.id, // fallback id
             name: r.name || `Role ${index + 1}`, // backend only provides name
-            description: roleDescriptions[r] || 'No description available',
+            description: r.description || 'No description available',
             color: r.color || 'primary',
             userCount: r.userCount || 0,
             permissions: rolePermissions[r.name] || {}, 
@@ -180,6 +120,8 @@ const RoleManagementPage = () => {
         setRoles([]); // fallback to empty array
       }
     };
+  useEffect(() => {
+    
 
     fetchRoles();
   }, []);
@@ -208,30 +150,39 @@ const RoleManagementPage = () => {
   };
 
   const handleSubmit = (formData) => {
-    if (modalMode === 'add') {
-      const newRole = {
-        id: roles.length + 1,
-        name: formData.name,
-        description: formData.description,
-        color: formData.color,
-        userCount: 0,
-        permissions: formData.permissions,
-        createdAt: new Date().toISOString().split('T')[0]
-      };
-      setRoles([...roles, newRole]);
-    } else {
-      setRoles(roles.map(role => 
-        role.id === selectedRole.id 
-          ? { ...role, ...formData }
-          : role
-      ));
-    }
+    // if (modalMode === 'add') {
+    //   const newRole = {
+    //     id: roles.length + 1,
+    //     name: formData.name,
+    //     description: formData.description,
+    //     color: formData.color,
+    //     userCount: 0,
+    //     permissions: formData.permissions,
+    //     createdAt: new Date().toISOString().split('T')[0]
+    //   };
+    //   setRoles([...roles, newRole]);
+    // } else {
+    //   setRoles(roles.map(role => 
+    //     role.id === selectedRole.id 
+    //       ? { ...role, ...formData }
+    //       : role
+    //   ));
+    // }
     handleCloseModal();
+    fetchRoles(); // Refresh roles after add/edit
   };
 
-  const handleDelete = (roleId) => {
+  const handleDelete = async (roleId) => {
     if (window.confirm('Are you sure you want to delete this role?')) {
-      setRoles(roles.filter(role => role.id !== roleId));
+      try {
+        await deleteRole(roleId); // API call to delete role
+        console.log('Role deleted successfully');
+      } catch (error) {
+        console.error('Error deleting role:', error);
+        alert('Failed to delete role. Please try again.');
+        return;
+      }
+      setRoles(roles.filter(r => r.id !== roleId));
     }
   };
 

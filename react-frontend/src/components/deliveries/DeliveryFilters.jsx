@@ -1,19 +1,16 @@
 import React from 'react';
 import { Row, Col, Card, Button, Form, InputGroup, Dropdown, ButtonGroup } from 'react-bootstrap';
 
-const OrdersFilters = ({ 
+const DeliveryFilters = ({ 
   searchTerm, 
   setSearchTerm, 
   filterStatus,
   setFilterStatus,
-  filterDate,
-  setFilterDate,
-  onAddOrder 
+  filterDriver,
+  setFilterDriver,
+  drivers
 }) => {
-  const statuses = ['Pending', 'Processing', 'ForDelivery', 'Assigned', 'InTransit', 'Delivered'];
-  const formatStatus = (status) => {
-    return status.replace(/([a-z])([A-Z])/g, '$1 $2');
-  };
+  const statuses = ['Pending', 'Assigned', 'In Transit', 'Delivered', 'Failed'];
 
   return (
     <Card className="border-0 shadow-sm mb-4">
@@ -27,7 +24,7 @@ const OrdersFilters = ({
               </InputGroup.Text>
               <Form.Control
                 type="search"
-                placeholder="Search by order #, customer..."
+                placeholder="Search delivery #, order #, customer..."
                 className="border-start-0 bg-light"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -43,32 +40,31 @@ const OrdersFilters = ({
             >
               <option value="all">All Status</option>
               {statuses.map(status => (
-                <option key={status} value={status}>
-                  {formatStatus(status)}
-                </option>
+                <option key={status} value={status}>{status}</option>
               ))}
             </Form.Select>
           </Col>
 
-          {/* Date Filter */}
-          <Col md={2}>
+          {/* Driver Filter */}
+          <Col md={3}>
             <Form.Select 
-              value={filterDate}
-              onChange={(e) => setFilterDate(e.target.value)}
+              value={filterDriver}
+              onChange={(e) => setFilterDriver(e.target.value)}
             >
-              <option value="all">All Time</option>
-              <option value="today">Today</option>
-              <option value="week">This Week</option>
-              <option value="month">This Month</option>
+              <option value="all">All Drivers</option>
+              <option value="unassigned">Unassigned</option>
+              {drivers.map(driver => (
+                <option key={driver.id} value={driver.id}>{driver.name}</option>
+              ))}
             </Form.Select>
           </Col>
 
           {/* Actions */}
-          <Col md={4} className="text-md-end">
-            {/* <ButtonGroup className="me-2">
+          <Col md={3} className="text-md-end">
+            {/* <ButtonGroup>
               <Button variant="outline-secondary">
-                <i className="bi bi-download me-2"></i>
-                Export
+                <i className="bi bi-calendar me-2"></i>
+                Schedule
               </Button>
               <Dropdown as={ButtonGroup}>
                 <Dropdown.Toggle variant="outline-secondary" split>
@@ -76,27 +72,19 @@ const OrdersFilters = ({
                 <Dropdown.Menu>
                   <Dropdown.Item>
                     <i className="bi bi-file-earmark-excel me-2"></i>
-                    Export as CSV
-                  </Dropdown.Item>
-                  <Dropdown.Item>
-                    <i className="bi bi-file-earmark-pdf me-2"></i>
-                    Export as PDF
+                    Export Routes
                   </Dropdown.Item>
                   <Dropdown.Item>
                     <i className="bi bi-printer me-2"></i>
-                    Print Labels
+                    Print Manifests
+                  </Dropdown.Item>
+                  <Dropdown.Item>
+                    <i className="bi bi-map me-2"></i>
+                    View Map
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
             </ButtonGroup> */}
-            
-            <Button 
-              variant="primary" 
-              onClick={onAddOrder}
-            >
-              <i className="bi bi-plus-circle me-2"></i>
-              New Order
-            </Button>
           </Col>
         </Row>
       </Card.Body>
@@ -104,4 +92,4 @@ const OrdersFilters = ({
   );
 };
 
-export default OrdersFilters;
+export default DeliveryFilters;

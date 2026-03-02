@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Form, Button, Row, Col } from 'react-bootstrap';
+import { Modal, Form, Button, Row, Col, Spinner } from 'react-bootstrap';
 import PermissionAccordion from './PermissionAccordion';
+import { createRole, updateRole } from '../../api/role-api';
 
 const RoleModal = ({ 
   show, 
@@ -13,43 +14,71 @@ const RoleModal = ({
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    color: 'primary',
-    permissions: {
-      users: [],
-      roles: [],
-      content: [],
-      settings: [],
-      reports: []
-    }
+    // color: 'primary',
+    // permissions: {
+    //   users: [],
+    //   roles: [],
+    //   content: [],
+    //   settings: [],
+    //   reports: []
+    // }
   });
+
+  const [error, setError] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!show) {
+      setIsSubmitting(false);
+    }
+  }, [show]);
 
   useEffect(() => {
     if (mode === 'edit' && role) {
       setFormData({
-        name: role.name,
+        role: role.name,
         description: role.description,
-        color: role.color,
-        permissions: role.permissions
+        // color: role.color,
+        // permissions: role.permissions
       });
     } else {
       setFormData({
-        name: '',
+        role: '',
         description: '',
-        color: 'primary',
-        permissions: {
-          users: [],
-          roles: [],
-          content: [],
-          settings: [],
-          reports: []
-        }
+        // color: 'primary',
+        // permissions: {
+        //   users: [],
+        //   roles: [],
+        //   content: [],
+        //   settings: [],
+        //   reports: []
+        // }
       });
     }
   }, [mode, role, show]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    setError({}); // Clear previous errors
+    console.log('Submitting role with data:', formData);
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    try {
+      if (mode === 'add') {
+        await createRole(formData);
+      } else {
+        await updateRole(role.id, formData);
+      }
+
+      onSubmit(); // Call the parent's onSubmit callback to refresh the role list
+      onHide();
+    } catch (error) {
+      console.error(`Error ${mode === 'add' ? 'creating' : 'updating'} role:`, error);
+      console.log('Error response data:', error.response?.data.errors);
+      setError(error.response?.data?.errors || 'An error occurred. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handlePermissionChange = (module, action) => {
@@ -68,7 +97,14 @@ const RoleModal = ({
   };
 
   return (
-    <Modal show={show} onHide={onHide} centered size="lg">
+    <Modal
+      show={show}
+      onHide={onHide}
+      centered
+      size="lg"
+      backdrop={isSubmitting ? 'static' : true}
+      keyboard={!isSubmitting}
+    >
       <Modal.Header closeButton>
         <Modal.Title className="fw-bold">
           {mode === 'add' ? 'Create New Role' : 'Edit Role'}
@@ -83,10 +119,15 @@ const RoleModal = ({
                 <Form.Control
                   type="text"
                   placeholder="Enter role name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  value={formData.role}
+                  onChange={(e) => setFormData({...formData, role: e.target.value})}
                   required
+                  isInvalid={!!error.Role}
+                  disabled={isSubmitting}
                 />
+                <Form.Control.Feedback type="invalid">
+                  {error.Role}
+                </Form.Control.Feedback>
               </Form.Group>
             </Col>
 
@@ -117,27 +158,44 @@ const RoleModal = ({
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
                   required
+                  isInvalid={!!error.Description}
+                  disabled={isSubmitting}
                 />
+                <Form.Control.Feedback type="invalid">
+                  {error.Description}
+                </Form.Control.Feedback>
               </Form.Group>
             </Col>
           </Row>
 
           {/* Permissions */}
-          <div className="mb-3">
+          {/* <div className="mb-3">
             <h6 className="fw-bold mb-3">Permissions</h6>
             <PermissionAccordion
               permissionModules={permissionModules}
               formData={formData}
               onPermissionChange={handlePermissionChange}
             />
-          </div>
+          </div> */}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={onHide}>
+          <Button variant="secondary" onClick={onHide} disabled={isSubmitting}>
             Cancel
           </Button>
-          <Button variant="primary" type="submit">
-            {mode === 'add' ? 'Create Role' : 'Save Changes'}
+          <Button variant="primary" type="submit" disabled={isSubmitting}>
+            {isSubmitting && (
+              <Spinner
+                as="span"
+                animation="border"
+                size="sm"
+                role="status"
+                aria-hidden="true"
+                className="me-2"
+              />
+            )}
+            {isSubmitting
+              ? (mode === 'add' ? 'Creating...' : 'Saving...')
+              : (mode === 'add' ? 'Create Role' : 'Save Changes')}
           </Button>
         </Modal.Footer>
       </Form>

@@ -6,6 +6,8 @@ import NotFound from "./pages/404NotFoundPage.jsx";
 import UserManagement from "./pages/UserManagementPage/UserManagement.jsx";
 import RoleManagement from "./pages/RoleManagementPage/RoleManagement.jsx";
 import Inventory from "./pages/InventoryPage/Inventory.jsx";
+import Orders from "./pages/OrdersPage/Orders.jsx";
+import Delivery from "./pages/DeliveryManagementPage/Delivery.jsx";
 
 function App() {
   return(
@@ -21,8 +23,10 @@ function App() {
           <Route path="/users" element={<ProtectedRoute allowedRoles={['Admin', 'Manager']}><UserManagement /></ProtectedRoute>} />
           <Route path="/roles" element={<ProtectedRoute allowedRoles={['Admin', 'Manager']}><RoleManagement /></ProtectedRoute>} />
           <Route path="/inventory" element={<ProtectedRoute allowedRoles={['Admin', 'Manager']}><Inventory /></ProtectedRoute>} />
+          <Route path="/orders" element={<ProtectedRoute allowedRoles={['Admin', 'Manager']}><Orders /></ProtectedRoute>} />
+          <Route path="/deliveries" element={<ProtectedRoute allowedRoles={['Admin', 'Manager']}><Delivery /></ProtectedRoute>} />
         </Routes>
-      
+
     </>
   )
 }

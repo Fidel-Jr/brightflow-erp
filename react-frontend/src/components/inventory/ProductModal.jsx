@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Form, Button, Row, Col, InputGroup } from 'react-bootstrap';
+import { Modal, Form, Button, Row, Col, InputGroup, Spinner } from 'react-bootstrap';
 import { createProduct, updateProduct } from '../../api/product-api';
 import { getCategories } from '../../api/category-api';
 import { getLocations } from '../../api/location-api';
@@ -10,6 +10,9 @@ const ProductModal = ({ show, mode, product, onHide, onSubmit, onSuccess }) => {
   const [locations, setLocations] = useState([]);
   const [errors, setErrors] = useState({});
   const [serverMessage, setServerMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(false);
+  const [isLoadingLocations, setIsLoadingLocations] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     sku: '',
@@ -49,39 +52,62 @@ const ProductModal = ({ show, mode, product, onHide, onSubmit, onSuccess }) => {
   useEffect(() => {
       if (!show) {
         setErrors({});
+        setIsSubmitting(false);
       }
     }, [show]);
 
   useEffect(() => {
+    if (!show) return;
+
+    let cancelled = false;
+
     const fetchCategories = async () => {
+      setIsLoadingCategories(true);
       try {
         const data = await getCategories();
         console.log("Categories: ", data.data);
-        setCategories(data.data);
+        if (!cancelled) {
+          setCategories(data.data);
+        }
       } catch (error) {
         console.error("Error loading categories:", error);
+      } finally {
+        if (!cancelled) {
+          setIsLoadingCategories(false);
+        }
       }
     };
 
     const fetchLocations = async () => {
+      setIsLoadingLocations(true);
       try {
         const data = await getLocations();
         console.log("Locations: ", data.data);
-        setLocations(data.data);
+        if (!cancelled) {
+          setLocations(data.data);
+        }
       } catch (error) {
         console.error("Error loading categories:", error);
+      } finally {
+        if (!cancelled) {
+          setIsLoadingLocations(false);
+        }
       }
     };
 
-    if (show) {
-      fetchCategories();
-      fetchLocations();
-    }
+    fetchCategories();
+    fetchLocations();
+
+    return () => {
+      cancelled = true;
+    };
   }, [show]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({});
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     
     try {
       const data = new FormData();
@@ -114,6 +140,8 @@ const ProductModal = ({ show, mode, product, onHide, onSubmit, onSuccess }) => {
       } else if (error.response?.status === 400) {
         setErrors(error.response.data.errors || {});
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -121,8 +149,17 @@ const ProductModal = ({ show, mode, product, onHide, onSubmit, onSuccess }) => {
     setFormData({ ...formData, [field]: value });
   };
 
+  const isLoadingLookups = isLoadingCategories || isLoadingLocations;
+
   return (
-    <Modal show={show} onHide={onHide} centered size="lg">
+    <Modal
+      show={show}
+      onHide={onHide}
+      centered
+      size="lg"
+      backdrop={isSubmitting ? 'static' : true}
+      keyboard={!isSubmitting}
+    >
       <Modal.Header closeButton>
         <Modal.Title className="fw-bold">
           {mode === 'add' ? 'Add New Product' : 'Edit Product'}
@@ -143,6 +180,7 @@ const ProductModal = ({ show, mode, product, onHide, onSubmit, onSuccess }) => {
                   value={formData.name}
                   onChange={(e) => handleChange('name', e.target.value)}
                   required
+                  disabled={isSubmitting}
                 />
               </Form.Group>
             </Col>
@@ -161,6 +199,7 @@ const ProductModal = ({ show, mode, product, onHide, onSubmit, onSuccess }) => {
                   required
                   // 🔥 Add these two lines:
                   isInvalid={!!errors.sku} 
+                  disabled={isSubmitting}
                 />
                 <Form.Control.Feedback type="invalid">
                   {errors.sku}
@@ -178,8 +217,11 @@ const ProductModal = ({ show, mode, product, onHide, onSubmit, onSuccess }) => {
                   value={formData.categoryId}
                   onChange={(e) => handleChange('categoryId', e.target.value)}
                   required
+                  disabled={isSubmitting || isLoadingCategories}
                 >
-                  <option value="">Select category</option>
+                  <option value="">
+                    {isLoadingCategories ? 'Loading categories...' : 'Select category'}
+                  </option>
                   {Array.isArray(categories) &&
                     categories.map(cat => (
                       <option key={cat.id} value={cat.id}>
@@ -206,6 +248,7 @@ const ProductModal = ({ show, mode, product, onHide, onSubmit, onSuccess }) => {
                     value={formData.price}
                     onChange={(e) => handleChange('price', e.target.value)}
                     required
+                    disabled={isSubmitting}
                   />
                 </InputGroup>
               </Form.Group>
@@ -223,6 +266,7 @@ const ProductModal = ({ show, mode, product, onHide, onSubmit, onSuccess }) => {
                   value={formData.quantity}
                   onChange={(e) => handleChange('quantity', e.target.value)}
                   required
+                  disabled={isSubmitting}
                 />
               </Form.Group>
             </Col>
@@ -239,6 +283,7 @@ const ProductModal = ({ show, mode, product, onHide, onSubmit, onSuccess }) => {
                   value={formData.lowStockThreshold}
                   onChange={(e) => handleChange('lowStockThreshold', e.target.value)}
                   required
+                  disabled={isSubmitting}
                 />
                 <Form.Text className="text-muted">
                   Alert when stock falls below this number
@@ -267,8 +312,11 @@ const ProductModal = ({ show, mode, product, onHide, onSubmit, onSuccess }) => {
                   value={formData.locationId}
                   onChange={(e) => handleChange('locationId', e.target.value)}
                   required
+                  disabled={isSubmitting || isLoadingLocations}
                 >
-                  <option value="">Select category</option>
+                  <option value="">
+                    {isLoadingLocations ? 'Loading locations...' : 'Select location'}
+                  </option>
                   {Array.isArray(locations) &&
                     locations.map(loc => (
                       <option key={loc.id} value={loc.id}>
@@ -290,6 +338,7 @@ const ProductModal = ({ show, mode, product, onHide, onSubmit, onSuccess }) => {
                   placeholder="Enter product description"
                   value={formData.description}
                   onChange={(e) => handleChange('description', e.target.value)}
+                  disabled={isSubmitting}
                 />
               </Form.Group>
             </Col>
@@ -302,6 +351,7 @@ const ProductModal = ({ show, mode, product, onHide, onSubmit, onSuccess }) => {
                   type="file"
                   accept="image/*"
                   onChange={(e) => handleChange('image', e.target.files[0])}
+                  disabled={isSubmitting}
                 />
                 <Form.Text className="text-muted">
                   Upload product image (JPG, PNG, max 5MB)
@@ -311,11 +361,23 @@ const ProductModal = ({ show, mode, product, onHide, onSubmit, onSuccess }) => {
           </Row>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={onHide}>
+          <Button variant="secondary" onClick={onHide} disabled={isSubmitting}>
             Cancel
           </Button>
-          <Button variant="primary" type="submit">
-            {mode === 'add' ? 'Add Product' : 'Save Changes'}
+          <Button variant="primary" type="submit" disabled={isSubmitting || isLoadingLookups}>
+            {isSubmitting && (
+              <Spinner
+                as="span"
+                animation="border"
+                size="sm"
+                role="status"
+                aria-hidden="true"
+                className="me-2"
+              />
+            )}
+            {isSubmitting
+              ? (mode === 'add' ? 'Adding...' : 'Saving...')
+              : (mode === 'add' ? 'Add Product' : 'Save Changes')}
           </Button>
         </Modal.Footer>
       </Form>

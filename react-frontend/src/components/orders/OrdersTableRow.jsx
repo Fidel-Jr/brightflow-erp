@@ -7,10 +7,9 @@ const OrdersTableRow = ({ order, onEdit, onDelete, onViewDetails, onStatusUpdate
     const colors = {
       'Pending': 'warning',
       'Processing': 'info',
-      'Shipped': 'primary',
       'Delivered': 'success'
     };
-    return colors[status] || 'secondary';
+    return colors[status] || 'dark';
   };
 
   const getPriorityColor = (priority) => {
@@ -26,16 +25,16 @@ const OrdersTableRow = ({ order, onEdit, onDelete, onViewDetails, onStatusUpdate
     const icons = {
       'Pending': 'bi-clock-history',
       'Processing': 'bi-arrow-repeat',
-      'Shipped': 'bi-truck',
-      'Delivered': 'bi-check-circle-fill'
+      'ForDelivery': 'bi-box2',
+      'Assigned': 'bi-person-check',
+      'InTransit': 'bi-truck',
+      'Delivered': 'bi-check-circle-fill',
+      'Failed': 'bi-x-circle-fill'
     };
     return icons[status] || 'bi-circle';
   };
 
   const handleEditClick = () => {
-    if (order.status !== 'Pending') {
-      return;
-    }
     onEdit(order);
   };
 
@@ -81,21 +80,13 @@ const OrdersTableRow = ({ order, onEdit, onDelete, onViewDetails, onStatusUpdate
         ${totalAmount.toFixed(2)}
       </td>
       <td className="align-middle">
-        <Dropdown>
+        {/* <Dropdown>
           <Dropdown.Toggle 
             as="div"
             className="cursor-pointer"
             style={{ cursor: 'pointer' }}
           >
-            <Badge 
-              bg={getStatusColor(order.status)} 
-              className="bg-opacity-10 px-3 py-2"
-            >
-              <span className={`text-${getStatusColor(order.status)}`}>
-                <i className={`${getStatusIcon(order.status)} me-1`}></i>
-                {order.status}
-              </span>
-            </Badge>
+            
           </Dropdown.Toggle>
           <Dropdown.Menu>
             <Dropdown.Header>Update Status</Dropdown.Header>
@@ -107,16 +98,21 @@ const OrdersTableRow = ({ order, onEdit, onDelete, onViewDetails, onStatusUpdate
               <i className="bi bi-arrow-repeat me-2 text-info"></i>
               Processing
             </Dropdown.Item>
-            <Dropdown.Item onClick={() => onStatusUpdate(order.id, 'Shipped')}>
-              <i className="bi bi-truck me-2 text-primary"></i>
-              Shipped
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => onStatusUpdate(order.id, 'Delivered')}>
+            <Dropdown.Item onClick={() => onStatusUpdate(order.id, 'ForDelivery')}>
               <i className="bi bi-check-circle-fill me-2 text-success"></i>
-              Delivered
+              For Delivery
             </Dropdown.Item>
           </Dropdown.Menu>
-        </Dropdown>
+        </Dropdown> */}
+        <Badge 
+          bg={getStatusColor(order.status)} 
+          className="bg-opacity-10 px-3 py-2"
+        >
+          <span className={`text-${getStatusColor(order.status)}`}>
+            <i className={`${getStatusIcon(order.status)} me-1`}></i>
+            {order.status === 'ForDelivery' ? 'For Delivery' : order.status === 'InTransit' ? 'In Transit' : order.status === 'Delivered' ? 'Delivered' : order.status}
+          </span>
+        </Badge>
       </td>
       <td className="align-middle">
         <div>
@@ -145,7 +141,7 @@ const OrdersTableRow = ({ order, onEdit, onDelete, onViewDetails, onStatusUpdate
               <i className="bi bi-eye me-2"></i>
               View Details
             </Dropdown.Item>
-            {order.status === 'Pending' && (
+            {(order.status === 'Pending' || order.status === 'Processing') && (
               <Dropdown.Item 
                 onClick={handleEditClick}
               >

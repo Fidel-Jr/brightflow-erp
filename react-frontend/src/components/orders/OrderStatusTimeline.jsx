@@ -1,43 +1,69 @@
 import React from 'react';
 
-const OrderStatusTimeline = ({ order }) => {
+const normalizeOrderStatus = (status) => {
+  if (!status) return 'Pending';
+  const normalized = String(status).replace(/\s+/g, '').replace(/_/g, '').toLowerCase();
+
+  if (normalized === 'fordelivery') return 'ForDelivery';
+  if (normalized === 'intransit') return 'InTransit';
+  if (normalized === 'pending') return 'Pending';
+  if (normalized === 'processing') return 'Processing';
+  if (normalized === 'assigned') return 'Assigned';
+  if (normalized === 'delivered') return 'Delivered';
+
+  return status;
+};
+
+const OrderStatusTimeline = ({ order, delivery }) => {
+  const currentStatus = normalizeOrderStatus(order?.status);
+  const statusOrder = ['Pending', 'Processing', 'ForDelivery', 'Assigned', 'InTransit', 'Delivered'];
+  const currentIndex = statusOrder.indexOf(currentStatus);
+
+  const isAtLeast = (status) => {
+    const stepIndex = statusOrder.indexOf(status);
+    if (stepIndex === -1) return false;
+    if (currentIndex === -1) return status === 'Pending';
+    return currentIndex >= stepIndex;
+  };
+
   const statuses = [
     {
+      key: 'Pending',
       name: 'Pending',
       icon: 'bi-clock-history',
-      date: order.createdAt,
-      completed: true
+      completed: isAtLeast('Pending')
     },
     {
+      key: 'Processing',
       name: 'Processing',
       icon: 'bi-arrow-repeat',
-      date: order.status !== 'Pending' ? order.updatedAt : null,
-      completed: ['Processing', 'Shipped', 'Delivered'].includes(order.status)
+      completed: isAtLeast('Processing')
     },
     {
-      name: 'Shipped',
+      key: 'ForDelivery',
+      name: 'For Delivery',
+      icon: 'bi-box2',
+      completed: isAtLeast('ForDelivery')
+    },
+    {
+      key: 'Assigned',
+      name: 'Assigned',
+      icon: 'bi-person-check',
+      completed: isAtLeast('Assigned')
+    },
+    {
+      key: 'InTransit',
+      name: 'In Transit',
       icon: 'bi-truck',
-      date: order.shippedAt,
-      completed: ['Shipped', 'Delivered'].includes(order.status)
+      completed: isAtLeast('InTransit')
     },
     {
+      key: 'Delivered',
       name: 'Delivered',
       icon: 'bi-check-circle-fill',
-      date: order.deliveredAt,
-      completed: order.status === 'Delivered'
+      completed: isAtLeast('Delivered')
     }
   ];
-
-  const formatDate = (dateString) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
 
   return (
     <div className="position-relative">
@@ -75,15 +101,15 @@ const OrderStatusTimeline = ({ order }) => {
           {/* Content */}
           <div className="flex-grow-1">
             <div className="fw-semibold mb-1">{status.name}</div>
-            {status.date && (
-              <small className="text-muted">{formatDate(status.date)}</small>
-            )}
-            {!status.date && status.completed && (
-              <small className="text-muted">In progress...</small>
-            )}
-            {!status.completed && (
-              <small className="text-muted">Pending</small>
-            )}
+            <small className="text-muted">
+              {status.key === currentStatus
+                ? currentStatus === 'Delivered'
+                  ? 'Delivered successfully'
+                  : 'In progress...'
+                : status.completed
+                  ? 'Completed'
+                  : 'Pending'}
+            </small>
           </div>
         </div>
       ))}

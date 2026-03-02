@@ -7,7 +7,7 @@ import OrdersFilters from '../../components/orders/OrdersFilters';
 import OrdersTable from '../../components/orders/OrdersTable';
 import OrderModal from '../../components/orders/OrderModal';
 import OrderDetailsModal from '../../components/orders/OrderDetailsModal';
-import { getOrders, deleteOrder } from '../../api/order-api';
+import { getOrders, deleteOrder, getOrderByOrderNumber } from '../../api/order-api';
 import { getProducts } from '../../api/product-api';
 import { getStaffs } from '../../api/user-api';
 
@@ -165,13 +165,14 @@ const Orders = () => {
 
   const fetchOrders = async () => {
     try {
-      const response = await getOrders(); // or your API call
+      const response = await getOrders();
       setOrders(response.data);
-      console.log("Orders: ", response.data)
+      return response.data; // ✅ return fresh list
     } catch (err) {
       console.error('Failed to fetch orders', err);
+      return [];
     }
-  }
+  };
 
   const fetchProducts = async () => {
       try {
@@ -213,9 +214,21 @@ const Orders = () => {
     fetchStaffs();
   }, []);
 
-  const handleOrderSaved = () => {
-    fetchOrders();
-    fetchProducts();
+  const handleOrderSaved = async (createdOrderNumber) => {
+    await fetchOrders();     // refresh table
+    await fetchProducts();   // optional
+
+    if (createdOrderNumber) {
+      try {
+        const response = await getOrderByOrderNumber(createdOrderNumber);
+        const fullOrder = response.data;
+
+        setSelectedOrder(fullOrder);
+        setShowDetailsModal(true);
+      } catch (err) {
+        console.error("Failed to fetch created order:", err);
+      }
+    }
   };
 
   const handleOpenModal = (mode, order = null) => {
