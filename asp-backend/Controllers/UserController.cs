@@ -220,7 +220,7 @@ namespace asp_backend.Controllers
                         errors = invalidRoles.Select(r => $"Role '{r}' does not exist in the system.")
                     });
                 }
-                
+
                 // Remove roles not in new selection
                 var currentRoles = await _userManager.GetRolesAsync(user);
 

@@ -40,6 +40,7 @@ namespace asp_backend.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderProducts> OrderProducts { get; set; }
         public DbSet<ApplicationRole> ApplicationRoles { get; set; }
+        public DbSet<Delivery> Deliveries { get; set; }
 
     }
 }

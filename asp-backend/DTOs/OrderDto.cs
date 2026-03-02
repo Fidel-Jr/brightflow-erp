@@ -6,14 +6,18 @@ namespace asp_backend.DTOs
     public class OrderDto
     {
         [Required]
-        public string CustomerName { get; set; }
+        public required string CustomerName { get; set; }
         [Required]
         [EmailAddress]
-        public string CustomerEmail { get; set; }
+        public required string CustomerEmail { get; set; }
         [Required]
-        public string CustomerPhone { get; set; }
+        public required string CustomerPhone { get; set; }
         [Required]
-        public string CustomerAddress { get; set; }
+        public required string CustomerAddress { get; set; }
+        public double? CustomerLat { get; set; }
+        public double? CustomerLng { get; set; }
+        public double? DistanceKm { get; set; }
+        public double? DurationMinutes { get; set; }
         public OrderStatus Status { get; set; }
         public OrderPriorityLevel PriorityLevel { get; set; }
         [Required]

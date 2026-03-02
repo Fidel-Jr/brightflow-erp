@@ -6,8 +6,11 @@
         {
             Pending,
             Processing,
-            Shipped,
-            Delivered
+            ForDelivery,
+            Assigned,
+            InTransit,
+            Delivered,
+            Failed
         }
 
         public enum OrderPriorityLevel

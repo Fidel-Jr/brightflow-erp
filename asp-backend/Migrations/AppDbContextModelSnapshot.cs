@@ -17,7 +17,7 @@ namespace asp_backend.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.2")
+                .HasAnnotation("ProductVersion", "10.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -318,6 +318,65 @@ namespace asp_backend.Migrations
                     b.ToTable("categories", (string)null);
                 });
 
+            modelBuilder.Entity("asp_backend.Models.Delivery", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("DeliveryNumber")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("delivery_number");
+
+                    b.Property<string>("DriverId")
+                        .HasColumnType("text")
+                        .HasColumnName("driver_id");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("notes");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("integer")
+                        .HasColumnName("order_id");
+
+                    b.Property<DateOnly?>("ScheduledDate")
+                        .HasColumnType("date")
+                        .HasColumnName("scheduled_date");
+
+                    b.Property<TimeOnly?>("ScheduledTime")
+                        .HasColumnType("time without time zone")
+                        .HasColumnName("scheduled_time");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
+                    b.Property<DateTime>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_date");
+
+                    b.HasKey("Id")
+                        .HasName("pk_deliveries");
+
+                    b.HasIndex("DriverId")
+                        .HasDatabaseName("ix_deliveries_driver_id");
+
+                    b.HasIndex("OrderId")
+                        .HasDatabaseName("ix_deliveries_order_id");
+
+                    b.ToTable("deliveries", (string)null);
+                });
+
             modelBuilder.Entity("asp_backend.Models.Location", b =>
                 {
                     b.Property<int>("Id")
@@ -373,6 +432,14 @@ namespace asp_backend.Migrations
                         .HasColumnType("text")
                         .HasColumnName("customer_email");
 
+                    b.Property<double>("CustomerLat")
+                        .HasColumnType("double precision")
+                        .HasColumnName("customer_lat");
+
+                    b.Property<double>("CustomerLng")
+                        .HasColumnType("double precision")
+                        .HasColumnName("customer_lng");
+
                     b.Property<string>("CustomerName")
                         .IsRequired()
                         .HasColumnType("text")
@@ -382,6 +449,14 @@ namespace asp_backend.Migrations
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("customer_phone");
+
+                    b.Property<double>("DistanceKm")
+                        .HasColumnType("double precision")
+                        .HasColumnName("distance_km");
+
+                    b.Property<double>("DurationMinutes")
+                        .HasColumnType("double precision")
+                        .HasColumnName("duration_minutes");
 
                     b.Property<DateOnly>("EstimatedDelivery")
                         .HasColumnType("date")
@@ -408,6 +483,10 @@ namespace asp_backend.Migrations
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("numeric")
                         .HasColumnName("total_amount");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.HasKey("Id")
                         .HasName("pk_orders");
@@ -584,6 +663,25 @@ namespace asp_backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_asp_net_user_tokens_asp_net_users_user_id");
+                });
+
+            modelBuilder.Entity("asp_backend.Models.Delivery", b =>
+                {
+                    b.HasOne("asp_backend.Models.ApplicationUser", "Driver")
+                        .WithMany()
+                        .HasForeignKey("DriverId")
+                        .HasConstraintName("fk_deliveries_application_user_driver_id");
+
+                    b.HasOne("asp_backend.Models.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_deliveries_orders_order_id");
+
+                    b.Navigation("Driver");
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("asp_backend.Models.Order", b =>

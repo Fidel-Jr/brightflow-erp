@@ -42,6 +42,90 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "asp_backend.Controllers.DeliveryController",
+    "Method": "CreateDelivery",
+    "RelativePath": "api/deliveries",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "asp_backend.DTOs.DeliveryDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "asp_backend.Controllers.DeliveryController",
+    "Method": "GetDeliveries",
+    "RelativePath": "api/deliveries",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "asp_backend.Controllers.DeliveryController",
+    "Method": "AssignDriver",
+    "RelativePath": "api/deliveries/{deliveryId}/assign-driver",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "deliveryId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "asp_backend.DTOs.UpdateDeliveryDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "asp_backend.Controllers.DeliveryController",
+    "Method": "UpdateDeliveryStatus",
+    "RelativePath": "api/deliveries/{deliveryId}/status",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "deliveryId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "asp_backend.DTOs.UpdateDeliveryStatusDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "asp_backend.Controllers.DeliveryController",
+    "Method": "UnassignDriver",
+    "RelativePath": "api/deliveries/{deliveryId}/unassign-driver",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "deliveryId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "asp_backend.Controllers.LocationController",
     "Method": "GetLocations",
     "RelativePath": "api/locations",
@@ -149,6 +233,37 @@
         "IsRequired": true
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "asp_backend.Controllers.OrderController",
+    "Method": "ReverseGeocode",
+    "RelativePath": "api/orders/reverse-geocode",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "lat",
+        "Type": "System.Double",
+        "IsRequired": false
+      },
+      {
+        "Name": "lng",
+        "Type": "System.Double",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "asp_backend.Controllers.OrderController",
+    "Method": "GetWarehouseLocation",
+    "RelativePath": "api/orders/warehouse-location",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {
@@ -315,6 +430,43 @@
       {
         "Name": "dto",
         "Type": "asp_backend.DTOs.RoleDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "asp_backend.Controllers.RoleController",
+    "Method": "UpdateRole",
+    "RelativePath": "api/roles/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "asp_backend.DTOs.UpdateRoleDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "asp_backend.Controllers.RoleController",
+    "Method": "DeleteRole",
+    "RelativePath": "api/roles/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.String",
         "IsRequired": true
       }
     ],

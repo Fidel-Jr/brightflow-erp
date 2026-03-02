@@ -2,6 +2,7 @@
 using asp_backend.DTOs;
 using asp_backend.Models;
 using asp_backend.Models.Enums;
+using asp_backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -17,16 +18,23 @@ namespace asp_backend.Controllers
     {
         private readonly AppDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RouteService _routeService;
+        private readonly IConfiguration _config;
 
-        public OrderController(AppDbContext context, UserManager<ApplicationUser> userManager)
+        public OrderController(AppDbContext context, UserManager<ApplicationUser> userManager, RouteService routeService, IConfiguration config)
         {
             _context = context;
             _userManager = userManager;
+            _routeService = routeService;
+            _config = config;
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateOrder(OrderDto dto)
         {
+
+            if (dto == null)
+                return BadRequest("Request body is required.");
 
             if (!ModelState.IsValid)
             {
@@ -46,19 +54,43 @@ namespace asp_backend.Controllers
 
             try
             {
+                var customerAddress = dto.CustomerAddress;
+                if (string.IsNullOrWhiteSpace(customerAddress))
+                    return BadRequest("CustomerAddress is required.");
+
                 // ✅ Validate staff via Identity
                 var assignedStaff = await _userManager
                     .FindByIdAsync(dto.AssignedStaffId!);
 
                 if (assignedStaff == null)
                     return BadRequest("Assigned staff not found.");
+                double lat, lng;
+
+                if (dto.CustomerLat.HasValue && dto.CustomerLng.HasValue)
+                {
+                    lat = dto.CustomerLat.Value;
+                    lng = dto.CustomerLng.Value;
+                }
+                else
+                {
+                    (lat, lng) = await _routeService.Geocode(customerAddress);
+                }
+
+                double warehouseLat = double.Parse(_config["Warehouse:Latitude"]!);
+                double warehouseLng = double.Parse(_config["Warehouse:Longitude"]!);
+
+                var (distance, duration) = await _routeService.GetRoute(warehouseLat, warehouseLng, lat, lng);
                 var order = new Order
                 {
                     OrderNumber = $"ORD-{DateTime.UtcNow.Ticks}",
                     CustomerName = dto.CustomerName,
                     CustomerEmail = dto.CustomerEmail,
                     CustomerPhone = dto.CustomerPhone,
-                    CustomerAddress = dto.CustomerAddress,
+                    CustomerAddress = customerAddress,
+                    CustomerLat = lat,
+                    CustomerLng = lng,
+                    DistanceKm = distance,
+                    DurationMinutes = duration,
                     AssignedStaffId = dto.AssignedStaffId,
                     EstimatedDelivery = dto.EstimatedDelivery,
                     Status = dto.Status,
@@ -104,13 +136,66 @@ namespace asp_backend.Controllers
 
                 await transaction.CommitAsync();
 
-                return Ok(new { OrderNumber = order.OrderNumber });
+                var result = new
+                {
+                    Id = order.Id,
+                    OrderNumber = order.OrderNumber,
+                    Customer = new
+                    {
+                        Name = order.CustomerName,
+                        Email = order.CustomerEmail,
+                        Address = order.CustomerAddress,
+                        Phone = order.CustomerPhone,
+                        Latitude = order.CustomerLat,
+                        Longitude = order.CustomerLng,
+                        DistanceKm = order.DistanceKm,
+                        DurationMinutes = order.DurationMinutes
+                    },
+                    AssignedStaffId = order.AssignedStaffId,
+                    AssignedStaffName = order.AssignedStaff?.UserName,
+                    Products = order.OrderProducts.Select(op => new OrderProductResponseDto
+                    {
+                        Id = op.ProductId,
+                        ProductName = op.Product.Name,
+                        ProductDescription = op.Product.Description,
+                        Sku = op.Product.SKU,
+                        Quantity = op.Quantity,
+                        Price = op.Product.Price,
+                        Total = op.Product.Price * op.Quantity
+                    }).ToList(),
+                    TotalAmount = order.TotalAmount,
+                    PriorityLevel = order.PriorityLevel,
+                    Status = order.Status.ToString(),
+                    EstimatedDelivery = order.EstimatedDelivery,
+                    CreatedAt = order.CreatedAt
+                };
+
+                return Ok(result);
             }
             catch
             {
                 await transaction.RollbackAsync();
                 return StatusCode(500, "Order creation failed.");
             }
+        }
+
+        [HttpGet("reverse-geocode")]
+        public async Task<IActionResult> ReverseGeocode(double lat, double lng)
+        {
+            var address = await _routeService.ReverseGeocode(lat, lng);
+            return Ok(new { address });
+        }
+
+        [HttpGet("warehouse-location")]
+        public IActionResult GetWarehouseLocation()
+        {
+            if (!double.TryParse(_config["Warehouse:Latitude"], out var lat) ||
+                !double.TryParse(_config["Warehouse:Longitude"], out var lng))
+            {
+                return StatusCode(500, "Warehouse location is not configured.");
+            }
+
+            return Ok(new { lat, lng });
         }
 
         [HttpGet]
@@ -132,6 +217,10 @@ namespace asp_backend.Controllers
                     Email = o.CustomerEmail,
                     Address = o.CustomerAddress,
                     Phone = o.CustomerPhone,
+                    Latitude = o.CustomerLat,
+                    Longitude = o.CustomerLng,
+                    DistanceKm = o.DistanceKm,
+                    DurationMinutes = o.DurationMinutes
                 },
                 AssignedStaffId = o.AssignedStaffId,
                 AssignedStaffName = o.AssignedStaff?.UserName,
@@ -149,6 +238,7 @@ namespace asp_backend.Controllers
                 PriorityLevel = o.PriorityLevel,
                 Status = o.Status.ToString(),
                 EstimatedDelivery = o.EstimatedDelivery,
+                Notes = o.Notes,
                 CreatedAt = o.CreatedAt
             });
 
@@ -174,25 +264,34 @@ namespace asp_backend.Controllers
             {
                 Id = order.Id,
                 OrderNumber = order.OrderNumber,
-                CustomerName = order.CustomerName,
-                CustomerEmail = order.CustomerEmail,
-                CustomerPhone = order.CustomerPhone,
-                CustomerAddress = order.CustomerAddress,
-                
-                OrderProducts = order.OrderProducts.Select(op => new OrderProductResponseDto
+                Customer = new
                 {
+                    Name = order.CustomerName,
+                    Email = order.CustomerEmail,
+                    Address = order.CustomerAddress,
+                    Phone = order.CustomerPhone,
+                    Latitude = order.CustomerLat,
+                    Longitude = order.CustomerLng,
+                    DistanceKm = order.DistanceKm,
+                    DurationMinutes = order.DurationMinutes
+                },
+                AssignedStaffId = order.AssignedStaffId,
+                AssignedStaffName = order.AssignedStaff?.UserName,
+                Products = order.OrderProducts.Select(op => new OrderProductResponseDto
+                {
+                    Id = op.ProductId,
                     ProductName = op.Product.Name,
                     ProductDescription = op.Product.Description,
+                    Sku = op.Product.SKU,
                     Quantity = op.Quantity,
                     Price = op.Product.Price,
                     Total = op.Product.Price * op.Quantity
                 }).ToList(),
-                Status = order.Status.ToString(),
-                PriorityLevel = order.PriorityLevel.ToString(),
                 TotalAmount = order.TotalAmount,
+                PriorityLevel = order.PriorityLevel,
+                Status = order.Status.ToString(),
                 EstimatedDelivery = order.EstimatedDelivery,
-                AssignedStaffName = order.AssignedStaff?.UserName,
-                Notes = order.Notes
+                CreatedAt = order.CreatedAt
             };
 
             return Ok(response);
@@ -206,8 +305,12 @@ namespace asp_backend.Controllers
 
             try
             {
+                if (dto == null)
+                    return BadRequest("Request body is required.");
+
                 var order = await _context.Orders
                     .Include(o => o.OrderProducts)
+                        .ThenInclude(op => op.Product)
                     .FirstOrDefaultAsync(o => o.Id == id);
 
                 if (order == null)
@@ -234,6 +337,7 @@ namespace asp_backend.Controllers
                 }
 
                 // Update basic order fields
+                var oldAddress = order.CustomerAddress;
                 order.CustomerName = dto.CustomerName;
                 order.CustomerEmail = dto.CustomerEmail;
                 order.CustomerPhone = dto.CustomerPhone;
@@ -242,6 +346,40 @@ namespace asp_backend.Controllers
                 order.PriorityLevel = dto.PriorityLevel;
                 order.EstimatedDelivery = dto.EstimatedDelivery ?? order.EstimatedDelivery;
                 order.Notes = dto.Notes ?? order.Notes;
+
+                var newAddress = dto.CustomerAddress?.Trim();
+                var previousAddress = oldAddress?.Trim();
+                var addressChanged = !string.Equals(newAddress, previousAddress, StringComparison.OrdinalIgnoreCase);
+                var hasNewCoordinates = dto.CustomerLat.HasValue && dto.CustomerLng.HasValue;
+
+                if (addressChanged || hasNewCoordinates)
+                {
+                    if (string.IsNullOrWhiteSpace(dto.CustomerAddress))
+                        return BadRequest("CustomerAddress is required.");
+
+                    double lat;
+                    double lng;
+
+                    if (hasNewCoordinates)
+                    {
+                        lat = dto.CustomerLat!.Value;
+                        lng = dto.CustomerLng!.Value;
+                    }
+                    else
+                    {
+                        (lat, lng) = await _routeService.Geocode(dto.CustomerAddress);
+                    }
+
+                    double warehouseLat = double.Parse(_config["Warehouse:Latitude"]!);
+                    double warehouseLng = double.Parse(_config["Warehouse:Longitude"]!);
+
+                    var (distance, duration) = await _routeService.GetRoute(warehouseLat, warehouseLng, lat, lng);
+
+                    order.CustomerLat = lat;
+                    order.CustomerLng = lng;
+                    order.DistanceKm = distance;
+                    order.DurationMinutes = duration;
+                }
 
                 // Handle products & stock
                 if (dto.Products != null)
@@ -320,7 +458,13 @@ namespace asp_backend.Controllers
                 // Commit transaction
                 await transaction.CommitAsync();
 
-                return Ok("Order updated successfully.");
+                return Ok(new
+                {
+                    message = "Order updated successfully.",
+                    orderId = order.Id,
+                    distanceKm = order.DistanceKm,
+                    durationMinutes = order.DurationMinutes
+                });
             }
             catch (Exception ex)
             {
@@ -356,36 +500,11 @@ namespace asp_backend.Controllers
             if (order.Status == OrderStatus.Delivered)
                 return BadRequest("Delivered orders cannot be modified.");
 
-            //// Optional: role-based restrictions
-            //var currentUser = await _userManager.GetUserAsync(User);
-            //var roles = await _userManager.GetRolesAsync(currentUser!);
-
-            //bool isWarehouse = roles.Contains("Warehouse Staff");
-            //bool isDelivery = roles.Contains("Delivery Staff");
-            //bool isAdmin = roles.Contains("Admin");
-
-            //if (!isAdmin)
-            //{
-            //    if (isWarehouse &&
-            //       !(dto.Status == OrderStatus.Processing ||
-            //         dto.Status == OrderStatus.Shipped))
-            //    {
-            //        return Forbid("Warehouse cannot set this status.");
-            //    }
-
-            //    if (isDelivery &&
-            //       !(dto.Status == OrderStatus.Shipped ||
-            //         dto.Status == OrderStatus.Delivered))
-            //    {
-            //        return Forbid("Delivery cannot set this status.");
-            //    }
-            //}
-
             order.Status = dto.Status;
 
             await _context.SaveChangesAsync();
 
-            return Ok( new { message = "Order status updated successfully." });
+            return Ok(new { message = "Order status updated successfully." });
         }
     }
 }
