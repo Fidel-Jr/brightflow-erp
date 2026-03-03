@@ -14,6 +14,26 @@ const DeliveryTableRow = ({
 
   const [showNavigationModal, setShowNavigationModal] = useState(false);
 
+  const dropdownPopperConfig = {
+    strategy: 'fixed',
+    modifiers: [
+      {
+        name: 'preventOverflow',
+        options: {
+          boundary: 'viewport',
+          padding: 8
+        }
+      },
+      {
+        name: 'flip',
+        options: {
+          boundary: 'viewport',
+          padding: 8
+        }
+      }
+    ]
+  };
+
   const handleViewOnMap = () => {
     if (!destinationAddress) return;
     setShowNavigationModal(true);
@@ -161,7 +181,7 @@ const DeliveryTableRow = ({
                   </span>
                 </Badge>
               </Dropdown.Toggle>
-              <Dropdown.Menu>
+              <Dropdown.Menu popperConfig={dropdownPopperConfig}>
                 <Dropdown.Header>Update Status</Dropdown.Header>
                 <Dropdown.Item onClick={() => onStatusUpdate(delivery.id, 'Pending')}>
                   <i className="bi bi-clock-history me-2 text-warning"></i>
@@ -196,7 +216,7 @@ const DeliveryTableRow = ({
             >
               <i className="bi bi-three-dots-vertical"></i>
             </Dropdown.Toggle>
-            <Dropdown.Menu>
+            <Dropdown.Menu align="end" popperConfig={dropdownPopperConfig}>
               <Dropdown.Item onClick={() => onViewDetails(delivery)}>
                 <i className="bi bi-eye me-2"></i>
                 View Details
