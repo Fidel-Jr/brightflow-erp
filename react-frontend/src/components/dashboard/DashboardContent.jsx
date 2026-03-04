@@ -7,6 +7,7 @@ import TopProducts from './TopProducts';
 import QuickStats from './QuickStats';
 import { useAuth } from '../../context/AuthContext.jsx';
 
+
 const DashboardContent = () => {
   const { user } = useAuth();
   return (
@@ -31,7 +32,7 @@ const DashboardContent = () => {
         </Row>
 
         {/* Quick Stats Row */}
-        <QuickStats />
+        {/* <QuickStats /> */}
       </Container>
     </main>
   );

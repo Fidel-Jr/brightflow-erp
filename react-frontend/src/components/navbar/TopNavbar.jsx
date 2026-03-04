@@ -53,7 +53,7 @@ const TopNavbar = ({ setShowSidebar, sidebarCollapsed, setSidebarCollapsed }) =>
         {/* Right Side Icons */}
         <div className="d-flex align-items-center gap-4">
           {/* Expandable Search Icon for Desktop */}
-          <div className="d-none d-lg-flex align-items-center me-4">
+          {/* <div className="d-none d-lg-flex align-items-center me-4">
             <div 
               className={`search-container ${searchExpanded ? 'expanded' : ''}`}
               style={{
@@ -89,7 +89,7 @@ const TopNavbar = ({ setShowSidebar, sidebarCollapsed, setSidebarCollapsed }) =>
                 </InputGroup>
               )}
             </div>
-          </div>
+          </div> */}
 
           {/* Notifications */}
           <button className="btn btn-link p-0 text-dark border-0 shadow-none position-relative">

@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { Row, Col, Card, Button, Form, InputGroup, Dropdown, ButtonGroup } from 'react-bootstrap';
+import React from 'react';
+import { Row, Col, Card, Button, Form, InputGroup } from 'react-bootstrap';
 
 const InventoryFilters = ({ 
   searchTerm, 
@@ -9,7 +9,8 @@ const InventoryFilters = ({
   categories =[],
   filterStock,
   setFilterStock,
-  onAddProduct 
+  onAddProduct,
+  onAddCategory = () => {}
 }) => {
   // const categories = ['Electronics', 'Furniture', 'Stationery', 'Office Supplies'];
 
@@ -83,11 +84,16 @@ const InventoryFilters = ({
                 </Dropdown.Menu>
               </Dropdown>
             </ButtonGroup> */}
-            
-            <Button 
-              variant="primary" 
-              onClick={onAddProduct}
+            <Button
+              variant="outline-primary"
+              className="me-2"
+              onClick={onAddCategory}
             >
+              <i className="bi bi-plus-circle me-2"></i>
+              Add Category
+            </Button>
+
+            <Button variant="primary" onClick={onAddProduct}>
               <i className="bi bi-plus-circle me-2"></i>
               Add Product
             </Button>

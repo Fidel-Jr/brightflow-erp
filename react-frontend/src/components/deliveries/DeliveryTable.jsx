@@ -52,10 +52,12 @@ const DeliveryTable = ({
             </thead>
             <tbody>
               {deliveries.length > 0 ? (
-                deliveries.map((delivery) => (
+                deliveries.map((delivery, index) => (
                   <DeliveryTableRow
                     key={delivery.id}
                     delivery={delivery}
+                    rowIndex={index}
+                    rowCount={deliveries.length}
                     onAssignDriver={onAssignDriver}
                     onUnassignDriver={onUnassignDriver}
                     onViewDetails={onViewDetails}

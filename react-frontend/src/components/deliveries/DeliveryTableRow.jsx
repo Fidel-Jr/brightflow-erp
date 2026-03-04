@@ -4,6 +4,8 @@ import DeliveryNavigationModal from '../delivery_driver/DeliveryNavigationModal'
 
 const DeliveryTableRow = ({
   delivery,
+  rowIndex = 0,
+  rowCount = 0,
   onAssignDriver,
   onUnassignDriver,
   onViewDetails,
@@ -13,26 +15,6 @@ const DeliveryTableRow = ({
   const destinationAddress = delivery?.orderDetails?.customerAddress;
 
   const [showNavigationModal, setShowNavigationModal] = useState(false);
-
-  const dropdownPopperConfig = {
-    strategy: 'fixed',
-    modifiers: [
-      {
-        name: 'preventOverflow',
-        options: {
-          boundary: 'viewport',
-          padding: 8
-        }
-      },
-      {
-        name: 'flip',
-        options: {
-          boundary: 'viewport',
-          padding: 8
-        }
-      }
-    ]
-  };
 
   const handleViewOnMap = () => {
     if (!destinationAddress) return;
@@ -45,6 +27,8 @@ const DeliveryTableRow = ({
     .toLowerCase();
   const isLockedAssignment = normalizedStatus === 'intransit' || normalizedStatus === 'delivered';
   const isLockedStatus = normalizedStatus === 'delivered';
+
+  const shouldDropUp = rowCount > 0 && rowIndex >= rowCount - 2;
 
   const getStatusColor = (status) => {
     const colors = {
@@ -165,7 +149,7 @@ const DeliveryTableRow = ({
               </span>
             </Badge>
           ) : (
-            <Dropdown>
+            <Dropdown drop={shouldDropUp ? 'up' : 'down'}>
               <Dropdown.Toggle 
                 as="div"
                 className="cursor-pointer"
@@ -181,7 +165,7 @@ const DeliveryTableRow = ({
                   </span>
                 </Badge>
               </Dropdown.Toggle>
-              <Dropdown.Menu popperConfig={dropdownPopperConfig}>
+              <Dropdown.Menu>
                 <Dropdown.Header>Update Status</Dropdown.Header>
                 <Dropdown.Item onClick={() => onStatusUpdate(delivery.id, 'Pending')}>
                   <i className="bi bi-clock-history me-2 text-warning"></i>
@@ -209,14 +193,14 @@ const DeliveryTableRow = ({
           )}
         </td>
         <td className="align-middle">
-          <Dropdown>
+          <Dropdown drop={shouldDropUp ? 'up' : 'down'} align="end">
             <Dropdown.Toggle 
               variant="link" 
               className="text-dark p-0 border-0 shadow-none"
             >
               <i className="bi bi-three-dots-vertical"></i>
             </Dropdown.Toggle>
-            <Dropdown.Menu align="end" popperConfig={dropdownPopperConfig}>
+            <Dropdown.Menu>
               <Dropdown.Item onClick={() => onViewDetails(delivery)}>
                 <i className="bi bi-eye me-2"></i>
                 View Details

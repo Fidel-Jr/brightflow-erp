@@ -1,8 +1,20 @@
 import React from 'react';
 import { Nav } from 'react-bootstrap';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 const SidebarContent = ({ isCollapsed = false, setShowSidebar }) => {
+const { user, loading, logout } = useAuth();
+
+const displayName = user?.username || user?.email || 'Guest';
+const displayEmail = user?.email || '';
+const displayRole = Array.isArray(user?.roles) && user.roles.length > 0
+    ? user.roles.join(', ')
+    : '';
+
+const primaryFooterText = displayEmail || displayName;
+const secondaryFooterText = displayRole;
+
 const navigation = [
   { name: 'Dashboard', icon: 'bi-grid', path: '/dashboard' },
   { name: 'Inventory', icon: 'bi-box', path: '/inventory' },
@@ -13,7 +25,7 @@ const navigation = [
 ];
 
 const apps = [
-    { name: 'Reports', icon: 'bi-file-earmark-bar-graph' }
+    { name: 'Logs', icon: 'bi-clock-history', path: '/logs' }
 ];
 
 return (
@@ -119,10 +131,21 @@ return (
             <i className="bi bi-person text-white"></i>
             </div>
             <div className="flex-fill">
-            <div className="fw-semibold small">Fidel-Jr</div>
-            <div className="text-muted" style={{ fontSize: '0.75rem' }}>Designer</div>
+                        <div className="fw-semibold small">
+                            {loading ? 'Loading...' : primaryFooterText}
+                        </div>
+                        <div className="text-muted" style={{ fontSize: '0.75rem' }}>
+                            {loading ? '' : (secondaryFooterText || '—')}
+                        </div>
             </div>
-            <i className="bi bi-power text-primary" style={{ cursor: 'pointer' }}></i>
+                        <i
+                            className="bi bi-power text-primary"
+                            style={{ cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.6 : 1 }}
+                            onClick={() => {
+                                if (!loading) logout();
+                            }}
+                            title="Logout"
+                        ></i>
         </div>
         </div>
     )}
@@ -138,7 +161,7 @@ return (
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             cursor: 'pointer'
             }}
-            title="Fidel-Jr"
+            title={loading ? 'Loading...' : primaryFooterText}
         >
             <i className="bi bi-person text-white"></i>
         </div>

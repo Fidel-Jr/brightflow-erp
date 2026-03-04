@@ -12,3 +12,8 @@ export const updateDeliveryStatus = (deliveryId, status) =>
 
 export const getDeliveryByOrderNumber = (orderNumber) =>
   api.get(`/deliveries/${orderNumber}`);
+
+
+// REPORTS
+
+export const getTotalPendingDeliveries = () => api.get("/reports/deliveries");

@@ -7,6 +7,7 @@ import InventoryFilters from '../../components/inventory/InventoryFilters';
 import InventoryTable from '../../components/inventory/InventoryTable';
 import ProductModal from '../../components/inventory/ProductModal';
 import ProductDetailsModal from '../../components/inventory/ProductDetailsModal';
+import CategoryModal from '../../components/inventory/CategoryModal';
 import { getProducts } from '../../api/product-api';
 import { getCategories } from '../../api/category-api';
 
@@ -14,6 +15,7 @@ const Inventory = () => {
   const [showSidebar, setShowSidebar] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [modalMode, setModalMode] = useState('add');
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -83,6 +85,9 @@ const Inventory = () => {
     setShowModal(false);
     setSelectedProduct(null);
   };
+
+  const handleOpenCategoryModal = () => setShowCategoryModal(true);
+  const handleCloseCategoryModal = () => setShowCategoryModal(false);
 
   const handleViewDetails = (product) => {
     setSelectedProduct(product);
@@ -194,6 +199,7 @@ const Inventory = () => {
               categories={categories}
               filterStock={filterStock}
               setFilterStock={setFilterStock}
+              onAddCategory={handleOpenCategoryModal}
               onAddProduct={() => handleOpenModal('add')}
             />
 
@@ -221,6 +227,13 @@ const Inventory = () => {
         onHide={handleCloseModal}
         onSubmit={handleSubmit}
         onSuccess={fetchProducts}
+      />
+
+      {/* Add Category Modal */}
+      <CategoryModal
+        show={showCategoryModal}
+        onHide={handleCloseCategoryModal}
+        onSuccess={fetchCategories}
       />
 
       {/* Product Details Modal */}

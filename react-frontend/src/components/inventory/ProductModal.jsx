@@ -249,7 +249,11 @@ const ProductModal = ({ show, mode, product, onHide, onSubmit, onSuccess }) => {
                     onChange={(e) => handleChange('price', e.target.value)}
                     required
                     disabled={isSubmitting}
+                    isInvalid={!!errors.Price}
                   />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.Price}
+                  </Form.Control.Feedback>
                 </InputGroup>
               </Form.Group>
             </Col>
@@ -267,7 +271,11 @@ const ProductModal = ({ show, mode, product, onHide, onSubmit, onSuccess }) => {
                   onChange={(e) => handleChange('quantity', e.target.value)}
                   required
                   disabled={isSubmitting}
-                />
+                  isInvalid={!!errors.StockQuantity}
+                 />
+                <Form.Control.Feedback type="invalid">
+                  {errors.StockQuantity}
+                </Form.Control.Feedback>
               </Form.Group>
             </Col>
 
@@ -284,7 +292,11 @@ const ProductModal = ({ show, mode, product, onHide, onSubmit, onSuccess }) => {
                   onChange={(e) => handleChange('lowStockThreshold', e.target.value)}
                   required
                   disabled={isSubmitting}
+                  isInvalid={!!errors.ReorderLevel}
                 />
+                <Form.Control.Feedback type="invalid">
+                  {errors.ReorderLevel}
+                </Form.Control.Feedback>
                 <Form.Text className="text-muted">
                   Alert when stock falls below this number
                 </Form.Text>

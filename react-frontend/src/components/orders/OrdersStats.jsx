@@ -4,8 +4,8 @@ import { Row, Col, Card } from 'react-bootstrap';
 const OrdersStats = ({ orders }) => {
   const totalOrders = orders.length;
   const pendingOrders = orders.filter(o => o.status === 'Pending').length;
-  const processingOrders = orders.filter(o => o.status === 'Processing').length;
-  const shippedOrders = orders.filter(o => o.status === 'Shipped').length;
+  // const processingOrders = orders.filter(o => o.status === 'Processing').length;
+  const shippedOrders = orders.filter(o => o.status === 'InTransit').length;
   const deliveredOrders = orders.filter(o => o.status === 'Delivered').length;
   const totalRevenue = orders.reduce((sum, o) => sum + o.totalAmount, 0);
 

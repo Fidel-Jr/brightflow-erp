@@ -119,7 +119,7 @@ const OrderDetailsModal = ({ show, order, onHide, onEdit, onStatusUpdate }) => {
               )}
               {order.customer.distanceKm && (
                 <p className="text-muted mb-0">
-                  <i className="bi bi-truck me-2"></i>
+                  <i className="bi bi-geo-alt me-2"></i>
                   Distance: {order.customer.distanceKm.toFixed(2)}km
                 </p>
               )}
