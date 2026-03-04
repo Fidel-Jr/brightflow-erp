@@ -24,7 +24,7 @@
 BrightFlow ERP aims to:
 
 - Reduce manual work in warehouse and logistics operations  
-- Track inventory and orders in real-time  
+- Track inventory and orders  
 - Provide dashboards and reports for managers  
 - Ensure secure, role-based access to sensitive data  
 
