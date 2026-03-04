@@ -22,7 +22,7 @@ namespace asp_backend.DTOs
     {
         [Required]
         public required string Username { get; set; }
-        [Required]
+        [Required, EmailAddress]
         public required string Email { get; set; }
         [Required]
         public required string Password { get; set; }

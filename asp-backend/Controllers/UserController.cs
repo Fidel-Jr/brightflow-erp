@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 
 namespace asp_backend.Controllers
@@ -14,7 +15,7 @@ namespace asp_backend.Controllers
     public class UserController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        public static RoleManager<ApplicationRole> _roleManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
 
         public UserController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
         {
@@ -28,23 +29,55 @@ namespace asp_backend.Controllers
             public const string DeliveryStaff = "Delivery Staff";
         }
 
+        // ✅ Helper method to format dates consistently
+        private static string? FormatDateTime(DateTime? dateTime)
+        {
+            return dateTime?
+                .ToLocalTime()
+                .ToString("MM/dd/yyyy hh:mm:ss tt");
+        }
+
+        // ✅ Helper method for email validation
+        private static bool IsValidEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return false;
+
+            var emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+            return Regex.IsMatch(email, emailPattern);
+        }
+
+        // ✅ Consistent error response helper
+        private IActionResult ErrorResponse(string message)
+        {
+            return BadRequest(new { errors = message });
+        }
+
+        private IActionResult ErrorResponse(IEnumerable<string> messages)
+        {
+            return BadRequest(new { errors = string.Join(" ", messages) });
+        }
+
+        private IActionResult ErrorResponse(Dictionary<string, string> fieldErrors)
+        {
+            return BadRequest(new { errors = fieldErrors });
+        }
+
         // GET: api/users/me
         [HttpGet("me")]
-        [Authorize]  // JWT authentication required
+        [Authorize]
         public async Task<IActionResult> GetCurrentUser()
         {
-            // Get the user ID from claims
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
             if (userId == null)
-                return Unauthorized(new { message = "Invalid token or user not found." });
+                return Unauthorized(new { errors = "Invalid token or user not found." });
 
             var user = await _userManager.FindByIdAsync(userId);
 
             if (user == null)
-                return NotFound(new { message = "User not found." });
+                return NotFound(new { errors = "User not found." });
 
-            // Optionally include roles
             var roles = await _userManager.GetRolesAsync(user);
 
             return Ok(new
@@ -53,18 +86,16 @@ namespace asp_backend.Controllers
                 username = user.UserName,
                 email = user.Email,
                 roles = roles,
-                lastLoginAt = user.LastLoginAt?
-                                .ToLocalTime()
-                                .ToString("MM/dd/yyyy hh:mm:ss tt")
+                lastLoginAt = FormatDateTime(user.LastLoginAt)
             });
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
-            var users = _userManager.Users
-                .OrderByDescending(u => u.LastLoginAt ?? DateTime.MinValue) // most recent login first
-                .ToList();
+            var users = await _userManager.Users
+                .OrderByDescending(u => u.LastLoginAt ?? DateTime.MinValue)
+                .ToListAsync();
 
             var userList = new List<object>();
 
@@ -80,49 +111,53 @@ namespace asp_backend.Controllers
                     phoneNumber = user.PhoneNumber,
                     status = user.Status.ToString(),
                     roles = roles,
-                    lastLoginAt = user.LastLoginAt?
-                                    .ToLocalTime()
-                                    .ToString("MM/dd/yyyy hh:mm:ss tt")
+                    lastLoginAt = FormatDateTime(user.LastLoginAt)
                 });
             }
 
             return Ok(userList);
         }
 
-
         [HttpPost]
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> CreateUser([FromBody] RegisterDto dto)
         {
-            var errors = new List<string>();
+            // ✅ Field-specific validation for better frontend handling
+            var fieldErrors = new Dictionary<string, string>();
 
             if (string.IsNullOrWhiteSpace(dto.Username))
-                errors.Add("Username is required.");
+                fieldErrors["username"] = "Username is required.";
 
             if (string.IsNullOrWhiteSpace(dto.Email))
-                errors.Add("Email is required.");
+                fieldErrors["email"] = "Email is required.";
+            else if (!IsValidEmail(dto.Email))
+                fieldErrors["email"] = "Email is not valid.";
 
             if (string.IsNullOrWhiteSpace(dto.Password))
-                errors.Add("Password is required.");
+                fieldErrors["password"] = "Password is required.";
 
-            if (!string.IsNullOrWhiteSpace(dto.Email))
+            if (fieldErrors.Any())
+                return ErrorResponse(fieldErrors);
+
+            // Check existing user by email
+            var existingUserByEmail = await _userManager.FindByEmailAsync(dto.Email);
+            if (existingUserByEmail != null)
             {
-                var emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
-                if (!Regex.IsMatch(dto.Email, emailPattern))
-                    errors.Add("Email is not valid.");
+                return ErrorResponse(new Dictionary<string, string>
+                {
+                    ["email"] = "Email already exists."
+                });
             }
 
-            if (errors.Any())
-                return BadRequest(new { isSuccess = false, errors });
-
-            // Check existing user
-            var existingUser = await _userManager.FindByEmailAsync(dto.Email);
-            if (existingUser != null)
-                return BadRequest(new
+            // Check existing user by username
+            var existingUserByUsername = await _userManager.FindByNameAsync(dto.Username);
+            if (existingUserByUsername != null)
+            {
+                return ErrorResponse(new Dictionary<string, string>
                 {
-                    isSuccess = false,
-                    errors = new[] { "Email already exists." }
+                    ["username"] = "Username already exists."
                 });
+            }
 
             var user = new ApplicationUser
             {
@@ -134,7 +169,22 @@ namespace asp_backend.Controllers
             var result = await _userManager.CreateAsync(user, dto.Password);
 
             if (!result.Succeeded)
-                return BadRequest(new { isSuccess = false, errors = result.Errors.Select(e => e.Description) });
+            {
+                // Map Identity errors to field-specific errors
+                var identityErrors = new Dictionary<string, string>();
+                foreach (var error in result.Errors)
+                {
+                    if (error.Code.Contains("Password"))
+                        identityErrors["password"] = error.Description;
+                    else if (error.Code.Contains("Email"))
+                        identityErrors["email"] = error.Description;
+                    else if (error.Code.Contains("UserName"))
+                        identityErrors["username"] = error.Description;
+                    else
+                        identityErrors["general"] = error.Description;
+                }
+                return ErrorResponse(identityErrors);
+            }
 
             // Assign multiple roles dynamically
             foreach (var roleName in dto.Roles!)
@@ -144,7 +194,7 @@ namespace asp_backend.Controllers
                     var role = new ApplicationRole
                     {
                         Name = roleName,
-                        NormalizedName = roleName.ToUpper() // Important for Identity
+                        NormalizedName = roleName.ToUpper()
                     };
 
                     await _roleManager.CreateAsync(role);
@@ -152,6 +202,8 @@ namespace asp_backend.Controllers
 
                 await _userManager.AddToRoleAsync(user, roleName);
             }
+
+            var assignedRoles = await _userManager.GetRolesAsync(user);
 
             return Ok(new
             {
@@ -162,20 +214,49 @@ namespace asp_backend.Controllers
                     user.Id,
                     user.UserName,
                     user.Email,
-                    Roles = dto.Roles, // return the role names as-is
+                    Roles = assignedRoles,
                     user.Status
                 }
             });
         }
 
         [HttpPut("{id}")]
-        //[Authorize(Policy = "AdminOnly")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> UpdateUser(string id, [FromBody] UpdateUserDto dto)
         {
             var user = await _userManager.FindByIdAsync(id);
             if (user == null)
-                return NotFound(new { message = "User not found." });
+                return NotFound(new { errors = "User not found." });
 
+            var fieldErrors = new Dictionary<string, string>();
+
+            // Validate username if provided
+            if (!string.IsNullOrWhiteSpace(dto.Username) && dto.Username != user.UserName)
+            {
+                var existingUser = await _userManager.FindByNameAsync(dto.Username);
+                if (existingUser != null && existingUser.Id != user.Id)
+                    fieldErrors["username"] = "Username already exists.";
+            }
+
+            // Validate email if provided
+            if (!string.IsNullOrWhiteSpace(dto.Email))
+            {
+                if (!IsValidEmail(dto.Email))
+                {
+                    fieldErrors["email"] = "Email is not valid.";
+                }
+                else if (dto.Email != user.Email)
+                {
+                    var existingUser = await _userManager.FindByEmailAsync(dto.Email);
+                    if (existingUser != null && existingUser.Id != user.Id)
+                        fieldErrors["email"] = "Email already exists.";
+                }
+            }
+
+            if (fieldErrors.Any())
+                return ErrorResponse(fieldErrors);
+
+            // Update user fields
             user.UserName = dto.Username ?? user.UserName;
             user.Email = dto.Email ?? user.Email;
             user.FullName = dto.FullName ?? user.FullName;
@@ -184,58 +265,63 @@ namespace asp_backend.Controllers
             {
                 user.Status = dto.Status.Value;
             }
+
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
-                return BadRequest(new
+            {
+                var identityErrors = new Dictionary<string, string>();
+                foreach (var error in result.Errors)
                 {
-                    isSuccess = false,
-                    errors = result.Errors.Select(e => e.Description)
-                });
+                    if (error.Code.Contains("Email"))
+                        identityErrors["email"] = error.Description;
+                    else if (error.Code.Contains("UserName"))
+                        identityErrors["username"] = error.Description;
+                    else
+                        identityErrors["general"] = error.Description;
+                }
+                return ErrorResponse(identityErrors);
+            }
+
             // Update password if provided
             if (!string.IsNullOrWhiteSpace(dto.Password))
             {
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
                 var passwordResult = await _userManager.ResetPasswordAsync(user, token, dto.Password);
                 if (!passwordResult.Succeeded)
-                    return BadRequest(new
+                {
+                    var passwordErrors = new Dictionary<string, string>
                     {
-                        isSuccess = false,
-                        errors = passwordResult.Errors.Select(e => e.Description)
-                    });
+                        ["password"] = string.Join(" ", passwordResult.Errors.Select(e => e.Description))
+                    };
+                    return ErrorResponse(passwordErrors);
+                }
             }
 
             // Handle roles if provided
             if (dto.Roles != null && dto.Roles.Length > 0)
             {
-                // Get all existing roles in DB
                 var existingRolesInDb = _roleManager.Roles.Select(r => r.Name).ToHashSet();
 
-                // Check if any of the new roles do not exist in DB
                 var invalidRoles = dto.Roles.Where(r => !existingRolesInDb.Contains(r)).ToList();
                 if (invalidRoles.Any())
                 {
-                    return BadRequest(new
+                    return ErrorResponse(new Dictionary<string, string>
                     {
-                        isSuccess = false,
-                        errors = invalidRoles.Select(r => $"Role '{r}' does not exist in the system.")
+                        ["roles"] = $"Role(s) do not exist: {string.Join(", ", invalidRoles)}"
                     });
                 }
 
-                // Remove roles not in new selection
                 var currentRoles = await _userManager.GetRolesAsync(user);
 
-                // Only remove roles that are being changed
                 var rolesToRemove = currentRoles.Except(dto.Roles).ToList();
                 if (rolesToRemove.Any())
                     await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
 
-                // Add roles that are new
                 var rolesToAdd = dto.Roles.Except(currentRoles).ToList();
                 if (rolesToAdd.Any())
                     await _userManager.AddToRolesAsync(user, rolesToAdd);
             }
 
-            // Return updated roles
             var updatedRoles = await _userManager.GetRolesAsync(user);
 
             return Ok(new
@@ -253,7 +339,6 @@ namespace asp_backend.Controllers
                     user.Status
                 }
             });
-
         }
 
         [HttpDelete("{id}")]
@@ -262,14 +347,14 @@ namespace asp_backend.Controllers
         {
             var user = await _userManager.FindByIdAsync(id);
             if (user == null)
-                return NotFound(new { message = "User not found." });
+                return NotFound(new { errors = "User not found." });
+
             var result = await _userManager.DeleteAsync(user);
             if (!result.Succeeded)
-                return BadRequest(new
-                {
-                    isSuccess = false,
-                    errors = result.Errors.Select(e => e.Description)
-                });
+            {
+                return ErrorResponse(result.Errors.Select(e => e.Description));
+            }
+
             return Ok(new
             {
                 isSuccess = true,
@@ -285,6 +370,7 @@ namespace asp_backend.Controllers
 
             var staffs = warehouseStaff
                 .Union(deliveryStaff)
+                .DistinctBy(u => u.Id)
                 .Select(u => new
                 {
                     u.Id,
@@ -295,6 +381,5 @@ namespace asp_backend.Controllers
 
             return Ok(staffs);
         }
-
     }
 }
