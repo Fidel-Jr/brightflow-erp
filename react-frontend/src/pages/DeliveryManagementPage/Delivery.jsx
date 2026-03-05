@@ -58,7 +58,6 @@ const DeliveryPage = () => {
   const fetchDeliveries = async () => {
       try {
         const response = await getDeliveries();
-        console.log('Deliveries In State: ', response.data);
         setDeliveries(response.data);
       } catch (error) {
         console.error('Error fetching deliveries:', error);
@@ -107,8 +106,6 @@ const DeliveryPage = () => {
       console.error('Error fetching order details:', error);
     }
   };
-
-  // console.log('Selected Delivery for Assignment:', selectedDelivery.id);
 
   const handleSubmitAssignment = async (driverId, scheduledDate, scheduledTime, notes) => {
     try {

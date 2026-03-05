@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Form, Badge, Dropdown, Button } from 'react-bootstrap';
-import DeliveryNavigationModal from '../delivery_driver/DeliveryNavigationModal';
+import DeliveryNavigationModal from './DeliveryNavigationModal';
 
 const DeliveryTableRow = ({
   delivery,
@@ -60,8 +60,6 @@ const DeliveryTableRow = ({
     };
     return icons[status] || 'bi-circle';
   };
-
-  console.log('Rendering DeliveryTableRow for delivery:', delivery.status);
 
   return (
     <>

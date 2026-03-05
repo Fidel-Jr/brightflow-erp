@@ -1,13 +1,18 @@
 import React from 'react';
 import { Modal, Button, Row, Col, Badge, ListGroup } from 'react-bootstrap';
+import { formatSmartDateTime } from '../../helper/formatPrettyDateTime';
 
 const ProductDetailsModal = ({ show, product, onHide, onEdit }) => {
   if (!product) return null;
 
+  const canEdit = typeof onEdit === 'function';
+
+  const lastRestockedLabel = formatSmartDateTime(product.lastRestocked) ?? 'Never';
+
   const getStockStatus = (product) => {
-    if (product.quantity === 0) {
+    if (product.stockQuantity === 0) {
       return { label: 'Out of Stock', variant: 'danger' };
-    } else if (product.quantity <= product.lowStockThreshold) {
+    } else if (product.stockQuantity <= product.reorderLevel) {
       return { label: 'Low Stock', variant: 'warning' };
     } else {
       return { label: 'In Stock', variant: 'success' };
@@ -115,10 +120,10 @@ const ProductDetailsModal = ({ show, product, onHide, onEdit }) => {
                 <div className="card-body p-3">
                   <small className="text-muted d-block mb-1">Total Value</small>
                   <div className="d-flex align-items-baseline">
-                    <h3 className="fw-bold mb-0 text-success">${totalValue}</h3>
+                    <h3 className="fw-bold mb-0 text-success">₱{totalValue}</h3>
                   </div>
                   <small className="text-muted">
-                    ${product.price.toFixed(2)} per unit
+                    ₱{product.price.toFixed(2)} per unit
                   </small>
                 </div>
               </div>
@@ -133,7 +138,7 @@ const ProductDetailsModal = ({ show, product, onHide, onEdit }) => {
                   <span className="text-muted">Unit Price</span>
                 </Col>
                 <Col xs={7}>
-                  <span className="fw-semibold">${product.price.toFixed(2)}</span>
+                  <span className="fw-semibold">₱{product.price.toFixed(2)}</span>
                 </Col>
               </Row>
             </ListGroup.Item>
@@ -169,7 +174,7 @@ const ProductDetailsModal = ({ show, product, onHide, onEdit }) => {
                   <span className="text-muted">Last Restocked</span>
                 </Col>
                 <Col xs={7}>
-                  <span className="fw-semibold">{product.lastRestocked}</span>
+                  <span className="fw-semibold">{lastRestockedLabel}</span>
                 </Col>
               </Row>
             </ListGroup.Item>
@@ -192,10 +197,12 @@ const ProductDetailsModal = ({ show, product, onHide, onEdit }) => {
         <Button variant="secondary" onClick={onHide}>
           Close
         </Button>
-        <Button variant="primary" onClick={() => onEdit(product)}>
-          <i className="bi bi-pencil me-2"></i>
-          Edit Product
-        </Button>
+        {canEdit && (
+          <Button variant="primary" onClick={() => onEdit(product)}>
+            <i className="bi bi-pencil me-2"></i>
+            Edit Product
+          </Button>
+        )}
       </Modal.Footer>
     </Modal>
   );

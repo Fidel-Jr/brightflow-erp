@@ -15,7 +15,6 @@ const DeliveryTable = ({
   onStatusUpdate,
   onViewOrder
 }) => {
-  console.log('Deliveries in Table: ', deliveries);
 
   const start = totalCount === 0 ? 0 : (currentPage - 1) * pageSize + 1;
   const end = Math.min(currentPage * pageSize, totalCount);

@@ -77,7 +77,7 @@ const OrdersTableRow = ({ order, onEdit, onDelete, onViewDetails, onStatusUpdate
         </div>
       </td>
       <td className="align-middle fw-semibold">
-        ${totalAmount.toFixed(2)}
+        ₱{totalAmount.toFixed(2)}
       </td>
       <td className="align-middle">
         {/* <Dropdown>

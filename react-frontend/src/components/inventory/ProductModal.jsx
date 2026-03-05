@@ -65,7 +65,6 @@ const ProductModal = ({ show, mode, product, onHide, onSubmit, onSuccess }) => {
       setIsLoadingCategories(true);
       try {
         const data = await getCategories();
-        console.log("Categories: ", data.data);
         if (!cancelled) {
           setCategories(data.data);
         }
@@ -82,7 +81,6 @@ const ProductModal = ({ show, mode, product, onHide, onSubmit, onSuccess }) => {
       setIsLoadingLocations(true);
       try {
         const data = await getLocations();
-        console.log("Locations: ", data.data);
         if (!cancelled) {
           setLocations(data.data);
         }
@@ -240,7 +238,7 @@ const ProductModal = ({ show, mode, product, onHide, onSubmit, onSuccess }) => {
                   Price <span className="text-danger">*</span>
                 </Form.Label>
                 <InputGroup>
-                  <InputGroup.Text>$</InputGroup.Text>
+                  <InputGroup.Text>₱</InputGroup.Text>
                   <Form.Control
                     type="number"
                     step="0.01"
@@ -351,7 +349,11 @@ const ProductModal = ({ show, mode, product, onHide, onSubmit, onSuccess }) => {
                   value={formData.description}
                   onChange={(e) => handleChange('description', e.target.value)}
                   disabled={isSubmitting}
+                  isInvalid={!!errors.Description}
                 />
+                <Form.Control.Feedback type="invalid">
+                  {errors.Description}
+                </Form.Control.Feedback>
               </Form.Group>
             </Col>
 

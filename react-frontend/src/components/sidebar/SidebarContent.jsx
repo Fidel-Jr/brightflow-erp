@@ -2,14 +2,24 @@ import React from 'react';
 import { Nav } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { hasRole } from '../../helper/auth-roles';
 
 const SidebarContent = ({ isCollapsed = false, setShowSidebar }) => {
 const { user, loading, logout } = useAuth();
 
+const roles = Array.isArray(user?.roles)
+    ? user.roles
+    : user?.role
+        ? [user.role]
+        : [];
+
+const isAdmin = hasRole(user, 'Admin');
+const isManager = hasRole(user, 'Manager');
+
 const displayName = user?.username || user?.email || 'Guest';
 const displayEmail = user?.email || '';
-const displayRole = Array.isArray(user?.roles) && user.roles.length > 0
-    ? user.roles.join(', ')
+const displayRole = roles.length > 0
+    ? roles.join(', ')
     : '';
 
 const primaryFooterText = displayEmail || displayName;
@@ -18,14 +28,17 @@ const secondaryFooterText = displayRole;
 const navigation = [
   { name: 'Dashboard', icon: 'bi-grid', path: '/dashboard' },
   { name: 'Inventory', icon: 'bi-box', path: '/inventory' },
-  { name: 'Orders', icon: 'bi-basket', path: '/orders' },
-  { name: 'Deliveries', icon: 'bi-truck', path: '/deliveries' },
+    ...(isAdmin ? [{ name: 'Orders', icon: 'bi-basket', path: '/orders' }] : []),
+    ...(isManager ? [{ name: 'Deliveries', icon: 'bi-truck', path: '/deliveries' }] : []),
   { name: 'Users', icon: 'bi-people', path: '/users' },
   { name: 'Roles', icon: 'bi-shield-lock', path: '/roles' },
 ];
 
 const apps = [
+    { name: 'Categories', icon: 'bi-tag', path: '/categories' },
+    { name: 'Locations', icon: 'bi-bookshelf', path: '/locations' },
     { name: 'Logs', icon: 'bi-clock-history', path: '/logs' }
+
 ];
 
 return (

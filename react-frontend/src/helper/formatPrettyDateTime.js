@@ -1,5 +1,7 @@
 export const formatSmartDateTime = (date) => {
+  if (date == null || date === '') return null;
   const d = new Date(date);
+  if (Number.isNaN(d.getTime())) return null;
   const now = new Date();
 
   const isToday = d.toDateString() === now.toDateString();

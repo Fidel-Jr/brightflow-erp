@@ -34,18 +34,28 @@ const UserTable = ({ users, currentPage, totalPages, pageSize, setCurrentPage, s
               </tr>
             </thead>
             <tbody>
-              {users.map((user, index) => (
-                <UserTableRow
-                  key={user.id}
-                  user={user}
-                  index={(currentPage - 1) * pageSize + index}
-                  onEdit={onEdit}
-                  onDelete={onDelete}
-                  onViewDetails={onViewDetails}
-                  canEdit={canEdit}
-                  canDelete={canDelete}
-                />
-              ))}
+              {users.length > 0 ? (
+                users.map((user, index) => (
+                  <UserTableRow
+                    key={user.id}
+                    user={user}
+                    index={(currentPage - 1) * pageSize + index}
+                    onEdit={onEdit}
+                    onDelete={onDelete}
+                    onViewDetails={onViewDetails}
+                    canEdit={canEdit}
+                    canDelete={canDelete}
+                  />
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="9" className="text-center py-5">
+                    <i className="bi bi-inbox display-4 text-muted d-block mb-3"></i>
+                    <p className="text-muted mb-0">No users found</p>
+                  </td>
+                </tr>
+              )}
+              {}
             </tbody>
           </Table>
         </div>

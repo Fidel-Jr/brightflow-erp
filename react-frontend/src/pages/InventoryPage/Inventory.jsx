@@ -10,6 +10,8 @@ import ProductDetailsModal from '../../components/inventory/ProductDetailsModal'
 import CategoryModal from '../../components/inventory/CategoryModal';
 import { getProducts } from '../../api/product-api';
 import { getCategories } from '../../api/category-api';
+import { useAuth } from '../../context/AuthContext';
+import { hasRole } from '../../helper/auth-roles';
 
 const Inventory = () => {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -26,6 +28,9 @@ const Inventory = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
+
+  const { user } = useAuth();
+  const isAdmin = hasRole(user, 'Admin');
   
   
 
@@ -38,7 +43,6 @@ const Inventory = () => {
         try {
           const response = await getProducts(); // or your API call
           setProducts(response.data);
-          console.log('Fetched products:', response.data);
         } catch (err) {
           console.error('Failed to fetch products', err);
           // fallback mock data
@@ -52,7 +56,6 @@ const Inventory = () => {
     try {
       const response = await getCategories(); // or your API call to fetch categories
       setCategories(response.data);
-      console.log('Fetched categories:', response.data);
     } catch (err) {
       console.error('Failed to fetch categories', err);
       // fallback mock data
@@ -76,6 +79,7 @@ const Inventory = () => {
   }, []);
 
   const handleOpenModal = (mode, product = null) => {
+    if (!isAdmin) return;
     setModalMode(mode);
     setSelectedProduct(product);
     setShowModal(true);
@@ -86,7 +90,10 @@ const Inventory = () => {
     setSelectedProduct(null);
   };
 
-  const handleOpenCategoryModal = () => setShowCategoryModal(true);
+  const handleOpenCategoryModal = () => {
+    if (!isAdmin) return;
+    setShowCategoryModal(true);
+  };
   const handleCloseCategoryModal = () => setShowCategoryModal(false);
 
   const handleViewDetails = (product) => {
@@ -113,12 +120,14 @@ const Inventory = () => {
   };
 
   const handleDelete = (productId) => {
+    if (!isAdmin) return;
     if (window.confirm('Are you sure you want to delete this product?')) {
       setProducts(products.filter(product => product.id !== productId));
     }
   };
 
   const handleDuplicate = (product) => {
+    if (!isAdmin) return;
     const duplicatedProduct = {
       ...product,
       id: products.length + 1,
@@ -199,8 +208,8 @@ const Inventory = () => {
               categories={categories}
               filterStock={filterStock}
               setFilterStock={setFilterStock}
-              onAddCategory={handleOpenCategoryModal}
-              onAddProduct={() => handleOpenModal('add')}
+              onAddCategory={isAdmin ? handleOpenCategoryModal : undefined}
+              onAddProduct={isAdmin ? () => handleOpenModal('add') : undefined}
             />
 
             {/* Products Table */}
@@ -210,9 +219,9 @@ const Inventory = () => {
               itemsPerPage={itemsPerPage}
               currentPage={currentPage}
               setCurrentPage={setCurrentPage}
-              onEdit={(product) => handleOpenModal('edit', product)}
-              onDelete={handleDelete}
-              onDuplicate={handleDuplicate}
+              onEdit={isAdmin ? (product) => handleOpenModal('edit', product) : undefined}
+              onDelete={isAdmin ? handleDelete : undefined}
+              onDuplicate={isAdmin ? handleDuplicate : undefined}
               onViewDetails={handleViewDetails}
             />
           </Container>
@@ -241,10 +250,10 @@ const Inventory = () => {
         show={showDetailsModal}
         product={selectedProduct}
         onHide={() => setShowDetailsModal(false)}
-        onEdit={(product) => {
+        onEdit={isAdmin ? (product) => {
           setShowDetailsModal(false);
           handleOpenModal('edit', product);
-        }}
+        } : undefined}
       />
     </div>
   );

@@ -14,7 +14,7 @@ const StatCards = () => {
       const formattedStats = [
         {
           title: 'Total Revenue',
-          value: `$${data.totalRevenue.toLocaleString()}`,
+          value: `₱${data.totalRevenue.toLocaleString()}`,
           icon: 'bi-currency-dollar',
           gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           trend: data.revenueChange >= 0 ? 'up' : 'down',

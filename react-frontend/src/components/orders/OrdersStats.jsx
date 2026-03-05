@@ -15,7 +15,7 @@ const OrdersStats = ({ orders }) => {
       value: totalOrders,
       icon: 'bi-cart',
       gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      subtext: `$${totalRevenue.toFixed(2)} revenue`
+      subtext: `₱${totalRevenue.toFixed(2)} revenue`
     },
     {
       label: 'Pending',

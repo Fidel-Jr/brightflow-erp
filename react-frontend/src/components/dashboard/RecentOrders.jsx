@@ -69,7 +69,7 @@ const RecentOrders = () => {
             color: getRandomColor(index)
           },
           product: formatProduct(order?.productCount ?? 0, order?.firstProductName ?? ''),
-          amount: Number.isFinite(totalAmount) ? `$${totalAmount.toFixed(2)}` : 'N/A',
+          amount: Number.isFinite(totalAmount) ? `₱${totalAmount.toFixed(2)}` : 'N/A',
           status: getStatusVariant(order?.status)
           };
         });

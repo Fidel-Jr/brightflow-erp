@@ -30,8 +30,6 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
   const [isWarehouseLoading, setIsWarehouseLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  console.log("Staffs: ", staffs);
-
   const [selectedProduct, setSelectedProduct] = useState('');
   const [productQuantity, setProductQuantity] = useState(1);
 
@@ -42,7 +40,6 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
   // const staffMembers = ['Sarah Wilson', 'Mike Johnson', 'Emily Davis', 'Tom Brown', 'James Miller'];
 
   const staffMembers = staffs;
-  console.log("Available Products: ", availableProducts)
 
   const warehouseLat = warehouse?.lat != null ? Number(warehouse.lat) : Number(DEFAULT_WAREHOUSE_LOCATION.lat);
   const warehouseLng = warehouse?.lng != null ? Number(warehouse.lng) : Number(DEFAULT_WAREHOUSE_LOCATION.lng);
@@ -179,7 +176,6 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
         if (mode === "add") {
           const response = await createOrder(payload);
           createdOrderNumber = response?.data?.orderNumber ?? response?.data?.OrderNumber ?? null;
-          console.log("Data to be Added!", payload)
           
         } else {
             // If moving to delivery
@@ -197,7 +193,6 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
                 };
 
                 await createDelivery(deliveryPayload);
-                console.log("Delivery created successfully");
               } catch (error) {
                 console.error("Error creating delivery:", error);
                 alert("Failed to create delivery. Please try again.");
@@ -207,20 +202,19 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
 
             // Update order AFTER delivery succeeds
             await updateOrder(order.id, payload);
-            console.log("Data updated!", payload);
           }
   
         onSubmit(createdOrderNumber); // Triggers the parent to refresh the list
         onHide();    // Closes the modal
       } catch (error) {
-          console.log(error?.response?.data?.errors ?? error);
+        console.error("Error creating order:", error);
+        alert("Failed to save order. Please check your input and try again.");
       } finally {
         setIsSubmitting(false);
       }
   };
 
 
-  // console.log("Product ID: ", formData.products.map(p => p.id));
   // LIKE CART ADDING
   const handleAddProduct = () => {
     if (!selectedProduct) return;
@@ -268,7 +262,6 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
   const calculateTotal = () => {
     return formData.products.reduce((sum, p) => sum + (p.price * p.quantity), 0);
   };
-  // console.log("Customer Name: ",formData.customer.name)
   return (
     <Modal
       show={show}
@@ -417,7 +410,7 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
                     <option value="">Select product...</option>
                     {availableProducts.map(product => (
                       <option key={product.id} value={product.id}>
-                        {product.name} - ${product.price} (Stock: {product.stockQuantity})
+                        {product.name} - ₱{product.price} (Stock: {product.stockQuantity})
                       </option>
                     ))}
                   </Form.Select>
@@ -460,7 +453,7 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
                   <tbody>
                     {formData.products.map(product => (
                       <tr key={product.id}>
-                        <td>{product.productName}</td>
+                        <td>{product.productName ? product.productName : product.name}</td>
                         <td><code>{product.sku}</code></td>
                         <td>
                           <Form.Control
@@ -472,8 +465,8 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
                             disabled={isSubmitting}
                           />
                         </td>
-                        <td>${product.price.toFixed(2)}</td>
-                        <td className="fw-bold">${(product.price * product.quantity).toFixed(2)}</td>
+                        <td>₱{product.price.toFixed(2)}</td>
+                        <td className="fw-bold">₱{(product.price * product.quantity).toFixed(2)}</td>
                         <td className="text-center">
                           <Button
                             variant="link"
@@ -488,7 +481,7 @@ const OrderModal = ({ show, mode, order, onHide, onSubmit, products, staffs }) =
                     ))}
                     <tr className="bg-light">
                       <td colSpan="4" className="text-end fw-bold">Total:</td>
-                      <td className="fw-bold text-success">${calculateTotal().toFixed(2)}</td>
+                      <td className="fw-bold text-success">₱{calculateTotal().toFixed(2)}</td>
                       <td></td>
                     </tr>
                   </tbody>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Modal, Button, Row, Col, Badge, Card, ListGroup, Table } from 'react-bootstrap';
 import DeliveryStatusTimeline from './DeliveryStatusTimeline';
 import { formatSmartDateTime } from '../../helper/formatPrettyDateTime';
-import DeliveryNavigationModal from '../delivery_driver/DeliveryNavigationModal';
+import DeliveryNavigationModal from './DeliveryNavigationModal';
 
 const DeliveryDetailsModal = ({ show, delivery, onHide, onAssignDriver, onStatusUpdate }) => {
   if (!delivery) return null;
@@ -77,7 +77,7 @@ const DeliveryDetailsModal = ({ show, delivery, onHide, onAssignDriver, onStatus
             <Col md={4} className="text-md-end">
               <div className="mb-2">
                 <small className="text-muted d-block">Order Amount</small>
-                <h4 className="fw-bold mb-0">${delivery.orderDetails.totalAmount.toFixed(2)}</h4>
+                <h4 className="fw-bold mb-0">₱{delivery.orderDetails.totalAmount.toFixed(2)}</h4>
               </div>
             </Col>
           </Row>

@@ -58,8 +58,6 @@ const RevenueSection = () => {
       const response = await getDashboardSummary();
       const payload = response?.data ?? response;
 
-      console.log('Dashboard Summary Response:', payload);
-
       // Check if salesByCategory exists and is an array
       if (!payload || !payload.salesByCategory) {
         console.error('Invalid response structure:', payload);
@@ -164,7 +162,7 @@ const RevenueSection = () => {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis />
-                  <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
+                  <Tooltip formatter={(value) => `₱${value.toLocaleString()}`} />
                   <Line type="monotone" dataKey="revenue" stroke="#667eea" strokeWidth={3} />
                 </LineChart>
               </ResponsiveContainer>
@@ -214,7 +212,7 @@ const RevenueSection = () => {
                     ></div>
                   </div>
                   <div className="text-muted" style={{ fontSize: '0.7rem', marginTop: '2px' }}>
-                    ${category.totalSales.toLocaleString()}
+                    ₱{category.totalSales.toLocaleString()}
                   </div>
                 </div>
               ))

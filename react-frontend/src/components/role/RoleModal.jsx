@@ -60,7 +60,6 @@ const RoleModal = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError({}); // Clear previous errors
-    console.log('Submitting role with data:', formData);
     if (isSubmitting) return;
     setIsSubmitting(true);
     try {
@@ -74,7 +73,6 @@ const RoleModal = ({
       onHide();
     } catch (error) {
       console.error(`Error ${mode === 'add' ? 'creating' : 'updating'} role:`, error);
-      console.log('Error response data:', error.response?.data.errors);
       setError(error.response?.data?.errors || 'An error occurred. Please try again.');
     } finally {
       setIsSubmitting(false);

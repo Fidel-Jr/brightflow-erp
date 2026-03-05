@@ -76,8 +76,6 @@ const OrderDetailsModal = ({ show, order, onHide, onEdit, onStatusUpdate }) => {
     return colors[priority] || 'secondary';
   };
 
-  console.log("Order Data:", order)
-
   return (
     <Modal show={show} onHide={onHide} size="xl" centered>
       <Modal.Header closeButton className="border-0 p-4">
@@ -133,7 +131,7 @@ const OrderDetailsModal = ({ show, order, onHide, onEdit, onStatusUpdate }) => {
             <Col md={4} className="text-md-end">
               <div className="mb-2">
                 <small className="text-muted d-block">Total Amount</small>
-                <h3 className="fw-bold text-success mb-0">${order.totalAmount.toFixed(2)}</h3>
+                <h3 className="fw-bold text-success mb-0">₱{order.totalAmount.toFixed(2)}</h3>
               </div>
             </Col>
           </Row>
@@ -188,13 +186,13 @@ const OrderDetailsModal = ({ show, order, onHide, onEdit, onStatusUpdate }) => {
                       <td>{product.productName}</td>
                       <td><code>{product.sku}</code></td>
                       <td className="text-center">{product.quantity}</td>
-                      <td className="text-end">${product.price.toFixed(2)}</td>
-                      <td className="text-end fw-semibold">${(product.price * product.quantity).toFixed(2)}</td>
+                      <td className="text-end">₱{product.price.toFixed(2)}</td>
+                      <td className="text-end fw-semibold">₱{(product.price * product.quantity).toFixed(2)}</td>
                     </tr>
                   ))}
                   <tr className="bg-light">
                     <td colSpan="4" className="text-end fw-bold">Subtotal:</td>
-                    <td className="text-end fw-bold">${order.totalAmount.toFixed(2)}</td>
+                    <td className="text-end fw-bold">₱{order.totalAmount.toFixed(2)}</td>
                   </tr>
                   {/* <tr className="bg-light">
                     <td colSpan="4" className="text-end fw-bold">Tax (0%):</td>
@@ -202,7 +200,7 @@ const OrderDetailsModal = ({ show, order, onHide, onEdit, onStatusUpdate }) => {
                   </tr> */}
                   <tr className="table-success">
                     <td colSpan="4" className="text-end fw-bold">Total:</td>
-                    <td className="text-end fw-bold text-success">${order.totalAmount.toFixed(2)}</td>
+                    <td className="text-end fw-bold text-success">₱{order.totalAmount.toFixed(2)}</td>
                   </tr>
                 </tbody>
               </Table>

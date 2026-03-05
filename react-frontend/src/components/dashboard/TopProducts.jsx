@@ -25,8 +25,6 @@ const TopProducts = () => {
       const response = await getDashboardSummary();
       const payload = response?.data ?? response;
 
-      console.log('Top Products Response:', payload);
-
       // Check if topProducts exists and is an array
       if (!payload || !payload.topProducts) {
         console.error('Invalid response structure:', payload);
@@ -47,7 +45,7 @@ const TopProducts = () => {
         id: item?.productId,
         name: item?.productName || 'Unknown Product',
         sales: `${item?.totalQuantity || 0} sales`,
-        price: `$${(item?.totalRevenue || 0).toFixed(2)}`,
+        price: `₱${(item?.totalRevenue || 0).toFixed(2)}`,
         quantity: item?.totalQuantity || 0,
         revenue: item?.totalRevenue || 0,
         icon: productStyles[index]?.icon || 'bi-box-seam',

@@ -6,6 +6,8 @@ import RoleStats from '../../components/role/RoleStats';
 import RoleGrid from '../../components/role/RoleGrid';
 import RoleModal from '../../components/role/RoleModal';
 import { getRoles, deleteRole } from '../../api/role-api';
+import { useAuth } from '../../context/AuthContext';
+import { hasRole } from '../../helper/auth-roles';
 
 const RoleManagementPage = () => {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -13,6 +15,9 @@ const RoleManagementPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState('add');
   const [selectedRole, setSelectedRole] = useState(null);
+
+  const { user } = useAuth();
+  const isAdmin = hasRole(user, 'Admin');
 
   
 
@@ -100,8 +105,6 @@ const RoleManagementPage = () => {
   const fetchRoles = async () => {
       try {
         const response = await getRoles();
-        console.log('Fetched roles:', response.data);
-
         // Map the API roles to full role objects
         const rolesData = (Array.isArray(response.data) ? response.data : response.data?.roles || [])
           .map((r, index) => ({
@@ -126,8 +129,6 @@ const RoleManagementPage = () => {
     fetchRoles();
   }, []);
 
-    
-    console.log('Current roles state:', roles);
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 992) {
@@ -139,6 +140,7 @@ const RoleManagementPage = () => {
   }, []);
 
   const handleOpenModal = (mode, role = null) => {
+    if (!isAdmin) return;
     setModalMode(mode);
     setSelectedRole(role);
     setShowModal(true);
@@ -159,7 +161,6 @@ const RoleManagementPage = () => {
     if (window.confirm('Are you sure you want to delete this role?')) {
       try {
         await deleteRole(roleId); // API call to delete role
-        console.log('Role deleted successfully');
       } catch (error) {
         console.error('Error deleting role:', error);
         alert('Failed to delete role. Please try again.');
@@ -212,22 +213,25 @@ const RoleManagementPage = () => {
             {/* Action Bar */}
             <Row className="mb-4">
               <Col>
-                <Button 
-                  variant="primary"
-                  onClick={() => handleOpenModal('add')}
-                >
-                  <i className="bi bi-plus-circle me-2"></i>
-                  Create New Role
-                </Button>
+                {isAdmin && (
+                  <Button 
+                    variant="primary"
+                    onClick={() => handleOpenModal('add')}
+                  >
+                    <i className="bi bi-plus-circle me-2"></i>
+                    Create New Role
+                  </Button>
+                )}
               </Col>
             </Row>
 
             {/* Roles Grid */}
             <RoleGrid 
               roles={roles}
-              onEdit={(role) => handleOpenModal('edit', role)}
-              onDelete={handleDelete}
-              onDuplicate={handleDuplicate}
+              onEdit={isAdmin ? (role) => handleOpenModal('edit', role) : undefined}
+              onDelete={isAdmin ? handleDelete : undefined}
+              onDuplicate={isAdmin ? handleDuplicate : undefined}
+              canManage={isAdmin}
             />
           </Container>
         </main>

@@ -63,7 +63,10 @@ const InventoryTable = ({ products,
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="8" className="text-center py-5">No products found</td>
+                    <td colSpan="9" className="text-center py-5">
+                      <i className="bi bi-inbox display-4 text-muted d-block mb-3"></i>
+                      <p className="text-muted mb-0">No products found</p>
+                    </td>
                   </tr>
                 )}
               </tbody>

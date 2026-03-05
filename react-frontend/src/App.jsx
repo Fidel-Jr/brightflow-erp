@@ -23,8 +23,8 @@ function App() {
           <Route path="/users" element={<ProtectedRoute allowedRoles={['Admin', 'Manager']}><UserManagement /></ProtectedRoute>} />
           <Route path="/roles" element={<ProtectedRoute allowedRoles={['Admin', 'Manager']}><RoleManagement /></ProtectedRoute>} />
           <Route path="/inventory" element={<ProtectedRoute allowedRoles={['Admin', 'Manager']}><Inventory /></ProtectedRoute>} />
-          <Route path="/orders" element={<ProtectedRoute allowedRoles={['Admin', 'Manager']}><Orders /></ProtectedRoute>} />
-          <Route path="/deliveries" element={<ProtectedRoute allowedRoles={['Admin', 'Manager']}><Delivery /></ProtectedRoute>} />
+          <Route path="/orders" element={<ProtectedRoute allowedRoles={['Admin']}><Orders /></ProtectedRoute>} />
+          <Route path="/deliveries" element={<ProtectedRoute allowedRoles={['Manager']}><Delivery /></ProtectedRoute>} />
         </Routes>
 
     </>

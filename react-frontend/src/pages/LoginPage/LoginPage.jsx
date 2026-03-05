@@ -68,7 +68,6 @@ function LoginPage() {
       const response = await loginAccount(form);
 
       localStorage.setItem("accessToken", response.data.token);
-      console.log("Login successful:", response.data);
       // Redirect
       login(response.data.token);
       navigate("/dashboard");

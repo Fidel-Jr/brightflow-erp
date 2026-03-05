@@ -6,6 +6,11 @@ const InventoryTableRow = ({ product, index, onEdit, onDelete, onDuplicate, onVi
     return null;
   }
 
+  const canEdit = typeof onEdit === 'function';
+  const canDelete = typeof onDelete === 'function';
+  const canDuplicate = typeof onDuplicate === 'function';
+  const canViewDetails = typeof onViewDetails === 'function';
+
   const parseNumber = (value, fallback = 0) => {
     const numericValue = Number(value);
     return Number.isFinite(numericValue) ? numericValue : fallback;
@@ -36,8 +41,6 @@ const InventoryTableRow = ({ product, index, onEdit, onDelete, onDuplicate, onVi
 
   const status = getStockStatus();
   const API_BASE = "https://localhost:7071";
-  console.log("Product image URL:",  product.imageUrl);
-
 
   return (
     <tr className={stockQuantity <= reorderLevel ? 'table-warning bg-opacity-10' : ''}>
@@ -80,7 +83,7 @@ const InventoryTableRow = ({ product, index, onEdit, onDelete, onDuplicate, onVi
         </Badge>
       </td>
       <td className="align-middle fw-semibold">
-        ${priceValue.toFixed(2)}
+        ₱{priceValue.toFixed(2)}
       </td>
       <td className="align-middle">
         <div className="d-flex align-items-center">
@@ -110,26 +113,39 @@ const InventoryTableRow = ({ product, index, onEdit, onDelete, onDuplicate, onVi
             <i className="bi bi-three-dots-vertical"></i>
           </Dropdown.Toggle>
           <Dropdown.Menu>
-            <Dropdown.Item onClick={() => onViewDetails(product)}>
-              <i className="bi bi-eye me-2"></i>
-              View Details
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => onEdit(product)}>
-              <i className="bi bi-pencil me-2"></i>
-              Edit
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => onDuplicate(product)}>
-              <i className="bi bi-files me-2"></i>
-              Duplicate
-            </Dropdown.Item>
-            <Dropdown.Divider />
-            <Dropdown.Item 
-              className="text-danger"
-              onClick={() => onDelete(product.id)}
-            >
-              <i className="bi bi-trash me-2"></i>
-              Delete
-            </Dropdown.Item>
+            {canViewDetails && (
+              <Dropdown.Item onClick={() => onViewDetails(product)}>
+                <i className="bi bi-eye me-2"></i>
+                View Details
+              </Dropdown.Item>
+            )}
+
+            {canEdit && (
+              <Dropdown.Item onClick={() => onEdit(product)}>
+                <i className="bi bi-pencil me-2"></i>
+                Edit
+              </Dropdown.Item>
+            )}
+
+            {canDuplicate && (
+              <Dropdown.Item onClick={() => onDuplicate(product)}>
+                <i className="bi bi-files me-2"></i>
+                Duplicate
+              </Dropdown.Item>
+            )}
+
+            {canDelete && (
+              <>
+                <Dropdown.Divider />
+                <Dropdown.Item 
+                  className="text-danger"
+                  onClick={() => onDelete(product.id)}
+                >
+                  <i className="bi bi-trash me-2"></i>
+                  Delete
+                </Dropdown.Item>
+              </>
+            )}
           </Dropdown.Menu>
         </Dropdown>
       </td>

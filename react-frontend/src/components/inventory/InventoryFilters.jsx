@@ -10,7 +10,7 @@ const InventoryFilters = ({
   filterStock,
   setFilterStock,
   onAddProduct,
-  onAddCategory = () => {}
+  onAddCategory
 }) => {
   // const categories = ['Electronics', 'Furniture', 'Stationery', 'Office Supplies'];
 
@@ -84,19 +84,23 @@ const InventoryFilters = ({
                 </Dropdown.Menu>
               </Dropdown>
             </ButtonGroup> */}
-            <Button
-              variant="outline-primary"
-              className="me-2"
-              onClick={onAddCategory}
-            >
-              <i className="bi bi-plus-circle me-2"></i>
-              Add Category
-            </Button>
+            {onAddCategory && (
+              <Button
+                variant="outline-primary"
+                className="me-2"
+                onClick={onAddCategory}
+              >
+                <i className="bi bi-plus-circle me-2"></i>
+                Add Category
+              </Button>
+            )}
 
-            <Button variant="primary" onClick={onAddProduct}>
-              <i className="bi bi-plus-circle me-2"></i>
-              Add Product
-            </Button>
+            {onAddProduct && (
+              <Button variant="primary" onClick={onAddProduct}>
+                <i className="bi bi-plus-circle me-2"></i>
+                Add Product
+              </Button>
+            )}
           </Col>
         </Row>
       </Card.Body>

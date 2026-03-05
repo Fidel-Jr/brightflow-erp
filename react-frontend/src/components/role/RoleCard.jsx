@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, Badge, Dropdown, ListGroup } from 'react-bootstrap';
 
-const RoleCard = ({ role, onEdit, onDelete }) => {
+const RoleCard = ({ role, onEdit, onDelete, canManage = false }) => {
   const getPermissionCount = (permissions = {}) => {
     return Object.values(permissions).flat().length;
   };
@@ -30,28 +30,37 @@ const RoleCard = ({ role, onEdit, onDelete }) => {
             </div>
           </div>
           
-          <Dropdown autoClose="outside">
-            <Dropdown.Toggle 
-              variant="link" 
-              className="text-dark p-0 border-0 shadow-none dropdown-no-caret"
-            >
-              <i className="bi bi-three-dots-vertical"></i>
-            </Dropdown.Toggle>
-            <Dropdown.Menu align="end">
-              <Dropdown.Item onClick={() => onEdit(role)}>
-                <i className="bi bi-pencil me-2"></i>
-                Edit
-              </Dropdown.Item>
-              <Dropdown.Divider />
-              <Dropdown.Item 
-                className="text-danger"
-                onClick={() => onDelete(role.id)}
+          {canManage && (onEdit || onDelete) && (
+            <Dropdown autoClose="outside">
+              <Dropdown.Toggle 
+                variant="link" 
+                className="text-dark p-0 border-0 shadow-none dropdown-no-caret"
               >
-                <i className="bi bi-trash me-2"></i>
-                Delete
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
+                <i className="bi bi-three-dots-vertical"></i>
+              </Dropdown.Toggle>
+              <Dropdown.Menu align="end">
+                {onEdit && (
+                  <Dropdown.Item onClick={() => onEdit(role)}>
+                    <i className="bi bi-pencil me-2"></i>
+                    Edit
+                  </Dropdown.Item>
+                )}
+
+                {onDelete && (
+                  <>
+                    <Dropdown.Divider />
+                    <Dropdown.Item 
+                      className="text-danger"
+                      onClick={() => onDelete(role.id)}
+                    >
+                      <i className="bi bi-trash me-2"></i>
+                      Delete
+                    </Dropdown.Item>
+                  </>
+                )}
+              </Dropdown.Menu>
+            </Dropdown>
+          )}
         </div>
 
         <p className="text-muted small mb-4">{role.description}</p>

@@ -51,7 +51,6 @@ const Orders = () => {
       try {
         const response = await getProducts();
         setProducts(response.data);
-        console.log('Fetched products:', response.data);
       } catch (err) {
         console.error('Failed to fetch products', err);
       }
@@ -71,7 +70,6 @@ const Orders = () => {
     try {
       const response = await getStaffs();
       setStaffs(response.data);
-      console.log('Fetched staffs:', response.data);
     } catch (err) {
       console.error('Failed to fetch staffs', err);
     }
@@ -144,7 +142,6 @@ const Orders = () => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
         await deleteOrder(orderId); // API call to delete user
-        console.log('User deleted successfully');
       } catch (error) {
         console.error('Error deleting user:', error);
         alert('Failed to delete order. Please try again.');
@@ -154,12 +151,33 @@ const Orders = () => {
     }
   };
 
+  // Keep pagination stable when filters/search change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filterStatus, filterDate]);
+
   // Filter orders
   const filteredOrders = orders.filter(order => {
-    const matchesSearch = 
-      order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.customer.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const search = (searchTerm ?? '').trim().toLowerCase();
+    const orderNumber = String(order?.orderNumber ?? order?.OrderNumber ?? '').toLowerCase();
+    const customerName = String(
+      order?.customer?.name ??
+      order?.customer?.Name ??
+      order?.customerName ??
+      ''
+    ).toLowerCase();
+    const customerEmail = String(
+      order?.customer?.email ??
+      order?.customer?.Email ??
+      order?.customerEmail ??
+      ''
+    ).toLowerCase();
+
+    const matchesSearch =
+      search.length === 0 ||
+      orderNumber.includes(search) ||
+      customerName.includes(search) ||
+      customerEmail.includes(search);
     
     const matchesStatus =
       filterStatus === 'all' ||
@@ -167,7 +185,10 @@ const Orders = () => {
     
     const matchesDate = () => {
       if (filterDate === 'all') return true;
+      if (!order?.createdAt) return false;
+
       const orderDate = new Date(order.createdAt);
+      if (Number.isNaN(orderDate.getTime())) return false;
       const today = new Date();
       const daysDiff = Math.floor((today - orderDate) / (1000 * 60 * 60 * 24));
       
@@ -179,6 +200,12 @@ const Orders = () => {
     
     return matchesSearch && matchesStatus && matchesDate();
   });
+
+  // If the current page becomes invalid after refresh, clamp it.
+  useEffect(() => {
+    const pages = Math.max(1, Math.ceil(filteredOrders.length / itemsPerPage));
+    setCurrentPage(prev => Math.min(prev, pages));
+  }, [filteredOrders.length, itemsPerPage]);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;

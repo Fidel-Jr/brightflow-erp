@@ -64,10 +64,10 @@ const UserDetailsModal = ({ show, user, onHide }) => {
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link eventKey="permissions" className="px-3 py-3">
+              {/* <Nav.Link eventKey="permissions" className="px-3 py-3">
                 <i className="bi bi-shield-check me-2"></i>
                 Permissions
-              </Nav.Link>
+              </Nav.Link> */}
             </Nav.Item>
           </Nav>
 
@@ -78,9 +78,9 @@ const UserDetailsModal = ({ show, user, onHide }) => {
             <Tab.Pane eventKey="activity">
               <UserActivityTab user={user} />
             </Tab.Pane>
-            <Tab.Pane eventKey="permissions">
+            {/* <Tab.Pane eventKey="permissions">
               <UserPermissionsTab user={user} />
-            </Tab.Pane>
+            </Tab.Pane> */}
           </Tab.Content>
         </Tab.Container>
       </Modal.Body>

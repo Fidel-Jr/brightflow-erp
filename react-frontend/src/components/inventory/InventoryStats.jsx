@@ -31,7 +31,7 @@ const InventoryStats = ({ products }) => {
     },
     {
       label: 'Total Value',
-      value: `$${totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      value: `₱${totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       icon: 'bi-currency-dollar',
       gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
       change: null
