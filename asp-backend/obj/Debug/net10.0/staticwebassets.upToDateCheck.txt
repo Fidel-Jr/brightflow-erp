@@ -5,3 +5,5 @@ wwwroot\uploads\8509e0a8-a6f2-47c4-9609-091e7258b3af.png
 wwwroot\uploads\a482b5cd-26c8-4f55-8ea4-9c689f71372d.png
 wwwroot\uploads\default-image.jpg
 wwwroot\uploads\e1037c39-78c1-4808-a888-eea8b38754f8.jpg
+wwwroot\uploads\16992894-9e19-4f37-af2c-976c4fc5d3ef.png
+wwwroot\uploads\8cb610f2-c249-48a5-8a7f-8fef6ccc8f4f.png

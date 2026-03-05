@@ -1,7 +1,7 @@
 ﻿using asp_backend.Data;
 using asp_backend.DTOs;
 using asp_backend.Models.Enums;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,20 +34,19 @@ namespace asp_backend.Controllers
             return Math.Round(((decimal)(current - previous) / previous) * 100, 2);
         }
 
+        [Authorize(Roles = "Admin,Manager")]
         [HttpGet("dashboard-summary")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetDashboardSummary()
         {
             var now = DateTime.UtcNow;
 
             var startOfCurrentMonth = DateTime.SpecifyKind(
-                                        new DateTime(now.Year, now.Month, 1),
-                                        DateTimeKind.Utc
-                                    );
+                new DateTime(now.Year, now.Month, 1),
+                DateTimeKind.Utc
+            );
             var startOfPreviousMonth = startOfCurrentMonth.AddMonths(-1);
 
-            // -------------------------
-            // TOTAL ORDERS
-            // -------------------------
             var currentOrders = await _context.Orders
                 .Where(o => o.CreatedAt >= startOfCurrentMonth)
                 .CountAsync();
@@ -59,37 +58,26 @@ namespace asp_backend.Controllers
 
             var ordersChange = CalculatePercentageChange(currentOrders, previousOrders);
 
-            // -------------------------
-            // LOW STOCK
-            // -------------------------
             var totalLowStock = await _context.Products
                 .Where(p => p.StockQuantity < p.ReorderLevel)
                 .CountAsync();
 
-            // (Low stock usually doesn’t need trend — optional)
-
-            // -------------------------
-            // PENDING DELIVERIES
-            // -------------------------
             var totalPendingDeliveries = await _context.Deliveries
-                .Where(d => d.Status == Models.Enums.DeliveryStatus.Pending)
+                .Where(d => d.Status == DeliveryStatus.Pending)
                 .CountAsync();
 
-            // -------------------------
-            // REVENUE
-            // -------------------------
             var currentRevenue = await _context.Deliveries
-            .Where(d => d.Status == Models.Enums.DeliveryStatus.Delivered &&
-                        d.UpdatedDate >= startOfCurrentMonth)
-            .Select(d => d.Order.TotalAmount)
-            .SumAsync(o => (decimal?)o) ?? 0;
+                .Where(d => d.Status == DeliveryStatus.Delivered &&
+                            d.UpdatedDate >= startOfCurrentMonth)
+                .Select(d => d.Order.TotalAmount)
+                .SumAsync(o => (decimal?)o) ?? 0;
 
             var previousRevenue = await _context.Deliveries
-            .Where(d => d.Status == Models.Enums.DeliveryStatus.Delivered &&
-                        d.UpdatedDate >= startOfPreviousMonth &&
-                        d.UpdatedDate < startOfCurrentMonth)
-            .Select(d => d.Order.TotalAmount)
-            .SumAsync(o => (decimal?)o) ?? 0;
+                .Where(d => d.Status == DeliveryStatus.Delivered &&
+                            d.UpdatedDate >= startOfPreviousMonth &&
+                            d.UpdatedDate < startOfCurrentMonth)
+                .Select(d => d.Order.TotalAmount)
+                .SumAsync(o => (decimal?)o) ?? 0;
 
             var revenueChange = CalculatePercentageChange(currentRevenue, previousRevenue);
 
@@ -103,13 +91,10 @@ namespace asp_backend.Controllers
                     id = o.Id,
                     orderNumber = o.OrderNumber,
                     customerName = o.CustomerName,
-
                     productCount = o.OrderProducts.Count(),
-
                     firstProductName = o.OrderProducts
                         .Select(op => op.Product.Name)
                         .FirstOrDefault(),
-
                     totalAmount = o.TotalAmount,
                     status = o.Status.ToString(),
                     createdAt = o.CreatedAt.ToString("yyyy-MM-dd")
@@ -163,11 +148,8 @@ namespace asp_backend.Controllers
             {
                 totalOrders = currentOrders,
                 ordersChange,
-
                 totalLowStock,
-
                 totalPendingDeliveries,
-
                 totalRevenue = currentRevenue,
                 revenueChange,
                 salesByCategory,
@@ -176,7 +158,9 @@ namespace asp_backend.Controllers
             });
         }
 
+        [Authorize(Roles = "Admin,Manager")]
         [HttpPost("monthly-revenue")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetMonthlyRevenue(MonthlyRevenueDto request)
         {
             int months = request.Months;
@@ -199,7 +183,7 @@ namespace asp_backend.Controllers
                 })
                 .OrderBy(x => x.Year).ThenBy(x => x.Month)
                 .ToListAsync();
-            
+
             for (int i = 0; i < months; i++)
             {
                 var date = startDate.AddMonths(i);
@@ -208,9 +192,11 @@ namespace asp_backend.Controllers
                     revenueByMonth.Add(new { Year = date.Year, Month = date.Month, Revenue = 0m });
                 }
             }
+
             revenueByMonth = revenueByMonth.OrderBy(r => r.Year).ThenBy(r => r.Month).ToList();
 
-            return Ok(revenueByMonth.Select(r => new {
+            return Ok(revenueByMonth.Select(r => new
+            {
                 label = $"{r.Month}/{r.Year}",
                 value = r.Revenue
             }));

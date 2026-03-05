@@ -31,6 +31,7 @@ namespace asp_backend.Models
         public int StockQuantity { get; set; }
         public int ReorderLevel { get; set; }
         public ProductStatus Status { get; set; } = ProductStatus.In_Stock;
+        public DateTime? LastRestocked { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     }

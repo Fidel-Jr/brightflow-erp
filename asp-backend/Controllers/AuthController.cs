@@ -2,7 +2,6 @@
 using asp_backend.Models;
 using asp_backend.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
@@ -14,14 +13,19 @@ namespace asp_backend.Controllers
     public class AuthController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly JwtService _jwtService;
-        public static RoleManager<ApplicationRole> _roleManager;
-        public AuthController(UserManager<ApplicationUser> userManager, JwtService jwtService, RoleManager<ApplicationRole> roleManager)
+
+        public AuthController(
+            UserManager<ApplicationUser> userManager,
+            RoleManager<ApplicationRole> roleManager,
+            JwtService jwtService)
         {
             _userManager = userManager;
-            _jwtService = jwtService;
             _roleManager = roleManager;
+            _jwtService = jwtService;
         }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
@@ -29,19 +33,28 @@ namespace asp_backend.Controllers
 
             if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
             {
-                return Unauthorized(
-                    new { isSuccess = false, message = "Invalid credentials" }
-                );
+                return Unauthorized(new
+                {
+                    isSuccess = false,
+                    message = "Invalid credentials"
+                });
             }
+
             user.LastLoginAt = DateTime.UtcNow;
             await _userManager.UpdateAsync(user);
+
             var roles = await _userManager.GetRolesAsync(user);
             var token = _jwtService.GenerateToken(user, roles);
 
-            return Ok(new { isSuccess = true, user = user.UserName, token });
+            return Ok(new
+            {
+                isSuccess = true,
+                user = user.UserName,
+                token
+            });
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
         {
@@ -67,13 +80,14 @@ namespace asp_backend.Controllers
                 return BadRequest(new { isSuccess = false, errors });
 
             var existingUser = await _userManager.FindByEmailAsync(dto.Email);
-
             if (existingUser != null)
+            {
                 return BadRequest(new
                 {
                     isSuccess = false,
                     errors = new[] { "Email already registered." }
                 });
+            }
 
             var user = new ApplicationUser
             {
@@ -83,13 +97,15 @@ namespace asp_backend.Controllers
 
             var result = await _userManager.CreateAsync(user, dto.Password);
             if (!result.Succeeded)
+            {
                 return BadRequest(new
                 {
                     isSuccess = false,
                     errors = result.Errors.Select(e => e.Description)
                 });
+            }
 
-            const string defaultRole = "WStaff"; // or Staff
+            const string defaultRole = "WStaff";
             if (!await _roleManager.RoleExistsAsync(defaultRole))
             {
                 var role = new ApplicationRole
@@ -103,12 +119,11 @@ namespace asp_backend.Controllers
 
             await _userManager.AddToRoleAsync(user, defaultRole);
 
-            return Ok(new
+            return StatusCode(StatusCodes.Status201Created, new
             {
-                isSuccess = true,
-                message = "User registered successfully"
+                success = true,
+                message = "User registered successfully."
             });
         }
-
     }
 }

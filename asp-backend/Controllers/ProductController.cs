@@ -3,7 +3,6 @@ using asp_backend.DTOs;
 using asp_backend.Models;
 using asp_backend.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,11 +21,12 @@ namespace asp_backend.Controllers
             _uploadImageService = uploadImageService;
         }
 
-        //[Authorize(Policy = "AdminOnly")]
+        [Authorize(Roles = "Admin,Manager")]
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetProducts()
         {
-            var products = await _context.Products
+            var products = await _context.Products.OrderBy(d => d.Name)
                 .Select(p => new
                 {
                     p.Id,
@@ -49,61 +49,19 @@ namespace asp_backend.Controllers
                     p.Price,
                     p.StockQuantity,
                     p.ReorderLevel,
-                    p.Status
+                    p.Status,
+                    p.LastRestocked
                 })
-                .ToListAsync(); // ✅ return ALL
+                .ToListAsync();
 
             return Ok(products);
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> GetProducts(int pageNumber = 1, int pageSize = 5)
-        //{
-        //    // Basic validation
-        //    pageNumber = pageNumber < 1 ? 1 : pageNumber;
-        //    pageSize = pageSize > 5 ? 5 : pageSize;
-
-        //    // 1. Get the total count before slicing the data
-        //    var totalRecords = await _context.Products.CountAsync();
-
-        //    // 2. Fetch only the specific "page" of data
-        //    var products = await _context.Products
-        //        .OrderBy(p => p.Id) // Required for consistent Skip/Take
-        //        .Skip((pageNumber - 1) * pageSize)
-        //        .Take(pageSize)
-        //        .Select(p => new
-        //        {
-        //            p.Id,
-        //            p.Name,
-        //            p.Description,
-        //            p.SKU,
-        //            Category = new { p.Category.Id, p.Category.Name },
-        //            Location = new { p.Location.Id, p.Location.Name },
-        //            ImageUrl = string.IsNullOrEmpty(p.ImageUrl)
-        //                        ? "/uploads/default-image.jpg"
-        //                        : p.ImageUrl,
-        //            p.Price,
-        //            p.StockQuantity,
-        //            p.Status
-        //        })
-        //        .ToListAsync();
-
-        //    // 3. Calculate total pages
-        //    var totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
-
-        //    return Ok(new
-        //    {
-        //        TotalRecords = totalRecords,
-        //        TotalPages = totalPages,
-        //        CurrentPage = pageNumber,
-        //        PageSize = pageSize,
-        //        Data = products
-        //    });
-        //}
-
-
-        //[Authorize(Policy = "AdminOnly")]
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> CreateProduct([FromForm] ProductDto productDto)
         {
             if (!ModelState.IsValid)
@@ -120,7 +78,6 @@ namespace asp_backend.Controllers
                 });
             }
 
-            // 🔥 Business validation
             if (await _context.Products.AnyAsync(p => p.SKU == productDto.SKU))
                 return Conflict(new { message = "SKU already exists." });
 
@@ -130,7 +87,6 @@ namespace asp_backend.Controllers
             if (!await _context.Locations.AnyAsync(l => l.Id == productDto.LocationId))
                 return BadRequest(new { message = "Invalid location." });
 
-            // 🔥 Image handling
             string imageUrl = "/uploads/default-image.jpg";
 
             if (productDto.Image != null)
@@ -146,10 +102,11 @@ namespace asp_backend.Controllers
                 SKU = productDto.SKU,
                 CategoryId = productDto.CategoryId,
                 LocationId = productDto.LocationId,
-                ImageUrl = imageUrl, // ✅ use uploaded image
+                ImageUrl = imageUrl,
                 Price = productDto.Price,
                 StockQuantity = productDto.StockQuantity,
                 ReorderLevel = productDto.ReorderLevel,
+                LastRestocked = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
@@ -157,7 +114,6 @@ namespace asp_backend.Controllers
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
-            // 🔥 Return clean projection
             var response = await _context.Products
                 .Where(p => p.Id == product.Id)
                 .Select(p => new
@@ -171,20 +127,24 @@ namespace asp_backend.Controllers
                     p.Price,
                     p.StockQuantity,
                     p.ReorderLevel,
-                    p.Status
+                    p.Status,
+                    p.LastRestocked
                 })
                 .FirstOrDefaultAsync();
 
-            return Ok(new
+            return StatusCode(StatusCodes.Status201Created, new
             {
                 message = "Product created successfully",
                 data = response
             });
         }
 
-
-        //[Authorize(Policy = "AdminOnly")]
+        [Authorize(Policy = "AdminOnly")]
         [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> UpdateProduct(int id, [FromForm] ProductDto productDto)
         {
             if (!ModelState.IsValid)
@@ -206,24 +166,20 @@ namespace asp_backend.Controllers
             if (product == null)
                 return NotFound(new { message = "Product not found." });
 
-            // 🔥 SKU uniqueness (exclude current product)
             if (await _context.Products
                 .AnyAsync(p => p.SKU == productDto.SKU && p.Id != id))
             {
                 return Conflict(new { message = "SKU already exists." });
             }
 
-            // 🔥 FK validation
             if (!await _context.Categories.AnyAsync(c => c.Id == productDto.CategoryId))
                 return BadRequest(new { message = "Invalid category." });
 
             if (!await _context.Locations.AnyAsync(l => l.Id == productDto.LocationId))
                 return BadRequest(new { message = "Invalid location." });
 
-            // 🔥 Image replacement logic
             if (productDto.Image != null)
             {
-                // delete old image if not default
                 if (!string.IsNullOrEmpty(product.ImageUrl) &&
                     product.ImageUrl != "/default-image.jpg")
                 {
@@ -234,7 +190,7 @@ namespace asp_backend.Controllers
                     .UploadImageAsync(productDto.Image, "uploads");
             }
 
-            // 🔥 Update fields
+            var previousStockQuantity = product.StockQuantity;
             product.Name = productDto.Name;
             product.Description = productDto.Description;
             product.SKU = productDto.SKU;
@@ -244,6 +200,11 @@ namespace asp_backend.Controllers
             product.StockQuantity = productDto.StockQuantity;
             product.ReorderLevel = productDto.ReorderLevel;
             product.UpdatedAt = DateTime.UtcNow;
+
+            if (product.StockQuantity != previousStockQuantity)
+            {
+                product.LastRestocked = DateTime.UtcNow;
+            }
 
             await _context.SaveChangesAsync();
 
@@ -262,6 +223,7 @@ namespace asp_backend.Controllers
                     p.StockQuantity,
                     p.ReorderLevel,
                     p.Status,
+                    p.LastRestocked,
                     p.UpdatedAt
                 })
                 .FirstOrDefaultAsync();
@@ -273,9 +235,10 @@ namespace asp_backend.Controllers
             });
         }
 
-
         [Authorize(Policy = "AdminOnly")]
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteProduct(int id)
         {
             var product = await _context.Products.FindAsync(id);
@@ -283,8 +246,10 @@ namespace asp_backend.Controllers
             {
                 return NotFound(new { message = "Product not found." });
             }
+
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
+
             return Ok(new { message = "Product deleted successfully" });
         }
     }

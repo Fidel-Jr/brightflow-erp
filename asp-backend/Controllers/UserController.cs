@@ -1,8 +1,6 @@
 ﻿using asp_backend.DTOs;
-using asp_backend.Extensions;
 using asp_backend.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -29,7 +27,6 @@ namespace asp_backend.Controllers
             public const string DeliveryStaff = "Delivery Staff";
         }
 
-        // ✅ Helper method to format dates consistently
         private static string? FormatDateTime(DateTime? dateTime)
         {
             return dateTime?
@@ -37,7 +34,6 @@ namespace asp_backend.Controllers
                 .ToString("MM/dd/yyyy hh:mm:ss tt");
         }
 
-        // ✅ Helper method for email validation
         private static bool IsValidEmail(string email)
         {
             if (string.IsNullOrWhiteSpace(email))
@@ -47,7 +43,6 @@ namespace asp_backend.Controllers
             return Regex.IsMatch(email, emailPattern);
         }
 
-        // ✅ Consistent error response helper
         private IActionResult ErrorResponse(string message)
         {
             return BadRequest(new { errors = message });
@@ -63,9 +58,12 @@ namespace asp_backend.Controllers
             return BadRequest(new { errors = fieldErrors });
         }
 
-        // GET: api/users/me
+        [Authorize(Policy = "AdminOnly")]
         [HttpGet("me")]
         [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetCurrentUser()
         {
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -90,7 +88,9 @@ namespace asp_backend.Controllers
             });
         }
 
+        [Authorize(Roles = "Admin, Manager")]
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _userManager.Users
@@ -118,11 +118,13 @@ namespace asp_backend.Controllers
             return Ok(userList);
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost]
         [Authorize(Policy = "AdminOnly")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateUser([FromBody] RegisterDto dto)
         {
-            // ✅ Field-specific validation for better frontend handling
             var fieldErrors = new Dictionary<string, string>();
 
             if (string.IsNullOrWhiteSpace(dto.Username))
@@ -139,7 +141,6 @@ namespace asp_backend.Controllers
             if (fieldErrors.Any())
                 return ErrorResponse(fieldErrors);
 
-            // Check existing user by email
             var existingUserByEmail = await _userManager.FindByEmailAsync(dto.Email);
             if (existingUserByEmail != null)
             {
@@ -149,7 +150,6 @@ namespace asp_backend.Controllers
                 });
             }
 
-            // Check existing user by username
             var existingUserByUsername = await _userManager.FindByNameAsync(dto.Username);
             if (existingUserByUsername != null)
             {
@@ -170,7 +170,6 @@ namespace asp_backend.Controllers
 
             if (!result.Succeeded)
             {
-                // Map Identity errors to field-specific errors
                 var identityErrors = new Dictionary<string, string>();
                 foreach (var error in result.Errors)
                 {
@@ -186,7 +185,6 @@ namespace asp_backend.Controllers
                 return ErrorResponse(identityErrors);
             }
 
-            // Assign multiple roles dynamically
             foreach (var roleName in dto.Roles!)
             {
                 if (!await _roleManager.RoleExistsAsync(roleName))
@@ -220,8 +218,11 @@ namespace asp_backend.Controllers
             });
         }
 
-        [HttpPut("{id}")]
         [Authorize(Policy = "AdminOnly")]
+        [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateUser(string id, [FromBody] UpdateUserDto dto)
         {
             var user = await _userManager.FindByIdAsync(id);
@@ -230,7 +231,6 @@ namespace asp_backend.Controllers
 
             var fieldErrors = new Dictionary<string, string>();
 
-            // Validate username if provided
             if (!string.IsNullOrWhiteSpace(dto.Username) && dto.Username != user.UserName)
             {
                 var existingUser = await _userManager.FindByNameAsync(dto.Username);
@@ -238,7 +238,6 @@ namespace asp_backend.Controllers
                     fieldErrors["username"] = "Username already exists.";
             }
 
-            // Validate email if provided
             if (!string.IsNullOrWhiteSpace(dto.Email))
             {
                 if (!IsValidEmail(dto.Email))
@@ -256,7 +255,6 @@ namespace asp_backend.Controllers
             if (fieldErrors.Any())
                 return ErrorResponse(fieldErrors);
 
-            // Update user fields
             user.UserName = dto.Username ?? user.UserName;
             user.Email = dto.Email ?? user.Email;
             user.FullName = dto.FullName ?? user.FullName;
@@ -282,7 +280,6 @@ namespace asp_backend.Controllers
                 return ErrorResponse(identityErrors);
             }
 
-            // Update password if provided
             if (!string.IsNullOrWhiteSpace(dto.Password))
             {
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -297,7 +294,6 @@ namespace asp_backend.Controllers
                 }
             }
 
-            // Handle roles if provided
             if (dto.Roles != null && dto.Roles.Length > 0)
             {
                 var existingRolesInDb = _roleManager.Roles.Select(r => r.Name).ToHashSet();
@@ -341,8 +337,11 @@ namespace asp_backend.Controllers
             });
         }
 
-        [HttpDelete("{id}")]
         [Authorize(Policy = "AdminOnly")]
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteUser(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
@@ -362,7 +361,9 @@ namespace asp_backend.Controllers
             });
         }
 
+        [Authorize(Roles = "Admin,Manager")]
         [HttpGet("staffs")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetStaffs()
         {
             var warehouseStaff = await _userManager.GetUsersInRoleAsync(Roles.WarehouseStaff);

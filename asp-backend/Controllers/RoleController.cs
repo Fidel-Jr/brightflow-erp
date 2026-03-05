@@ -1,7 +1,6 @@
 ﻿using asp_backend.DTOs;
 using asp_backend.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,8 +10,8 @@ namespace asp_backend.Controllers
     [ApiController]
     public class RoleController : ControllerBase
     {
-        public static RoleManager<ApplicationRole> _roleManager;
-        public static UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public RoleController(RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager)
         {
@@ -20,19 +19,17 @@ namespace asp_backend.Controllers
             _userManager = userManager;
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpGet]
-        //[Authorize(Policy = "AdminOnly")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetRoles()
         {
-            // Get all roles
             var roles = _roleManager.Roles.ToList();
 
-            // Build a response with role name + description + assigned user count
             var rolesWithUserCount = new List<object>();
 
             foreach (var role in roles)
             {
-                // Get all users in this role
                 var usersInRole = await _userManager.GetUsersInRoleAsync(role.Name!);
 
                 rolesWithUserCount.Add(new
@@ -47,10 +44,12 @@ namespace asp_backend.Controllers
             return Ok(rolesWithUserCount);
         }
 
-
-
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost]
-        //[Authorize(Policy = "AdminOnly")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateRole([FromBody] RoleDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Role))
@@ -98,29 +97,23 @@ namespace asp_backend.Controllers
             });
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateRole(string id, [FromBody] UpdateRoleDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Description))
                 return BadRequest(new { message = "Role description cannot be empty." });
 
-            // Find role by Id
             var role = await _roleManager.FindByIdAsync(id);
             if (role == null)
                 return NotFound(new { message = "Role not found." });
 
-            // Update description
             role.Description = dto.Description;
             role.Name = dto.Role;
-
-
-            // Optionally, update name if provided
-            //if (!string.IsNullOrWhiteSpace(role.Name))
-            //{
-            //    var exists = await _roleManager.RoleExistsAsync(dto.Role);
-            //    if (exists)
-            //        return Conflict(new { message = "A role with this name already exists." });
-            //}
 
             var result = await _roleManager.UpdateAsync(role);
 
@@ -146,21 +139,22 @@ namespace asp_backend.Controllers
             });
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpDelete("{id}")]
-        // [Authorize(Policy = "AdminOnly")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteRole(string id)
         {
-            // Find the role by Id
             var role = await _roleManager.FindByIdAsync(id);
             if (role == null)
                 return NotFound(new { message = "Role not found." });
 
-            // Check if any users are assigned to this role
             var usersInRole = await _userManager.GetUsersInRoleAsync(role.Name!);
             if (usersInRole.Any())
                 return BadRequest(new { message = "Cannot delete role with assigned users." });
 
-            // Delete the role
             var result = await _roleManager.DeleteAsync(role);
             if (!result.Succeeded)
                 return StatusCode(
@@ -174,6 +168,5 @@ namespace asp_backend.Controllers
 
             return Ok(new { message = "Role deleted successfully." });
         }
-
     }
 }

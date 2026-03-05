@@ -1,6 +1,7 @@
 ﻿using asp_backend.Data;
 using asp_backend.DTOs;
 using asp_backend.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,7 @@ namespace asp_backend.Controllers
             _context = context;
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpGet]
         public async Task<IActionResult> GetCategories()
         {
@@ -32,6 +34,7 @@ namespace asp_backend.Controllers
             return Ok(categories);
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost]
         public async Task<IActionResult> CreateCategory([FromBody] CategoryDto dto)
         {

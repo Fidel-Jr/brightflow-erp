@@ -4,7 +4,6 @@ using asp_backend.Models;
 using asp_backend.Models.Enums;
 using asp_backend.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +20,11 @@ namespace asp_backend.Controllers
         private readonly RouteService _routeService;
         private readonly IConfiguration _config;
 
-        public OrderController(AppDbContext context, UserManager<ApplicationUser> userManager, RouteService routeService, IConfiguration config)
+        public OrderController(
+            AppDbContext context,
+            UserManager<ApplicationUser> userManager,
+            RouteService routeService,
+            IConfiguration config)
         {
             _context = context;
             _userManager = userManager;
@@ -29,13 +32,14 @@ namespace asp_backend.Controllers
             _config = config;
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateOrder(OrderDto dto)
         {
-
-            if (dto == null)
-                return BadRequest("Request body is required.");
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(new
@@ -50,7 +54,7 @@ namespace asp_backend.Controllers
                 });
             }
 
-            using var transaction = await _context.Database.BeginTransactionAsync();
+            await using var transaction = await _context.Database.BeginTransactionAsync();
 
             try
             {
@@ -58,12 +62,10 @@ namespace asp_backend.Controllers
                 if (string.IsNullOrWhiteSpace(customerAddress))
                     return BadRequest("CustomerAddress is required.");
 
-                // ✅ Validate staff via Identity
-                var assignedStaff = await _userManager
-                    .FindByIdAsync(dto.AssignedStaffId!);
-
+                var assignedStaff = await _userManager.FindByIdAsync(dto.AssignedStaffId!);
                 if (assignedStaff == null)
                     return BadRequest("Assigned staff not found.");
+
                 double lat, lng;
 
                 if (dto.CustomerLat.HasValue && dto.CustomerLng.HasValue)
@@ -80,6 +82,7 @@ namespace asp_backend.Controllers
                 double warehouseLng = double.Parse(_config["Warehouse:Longitude"]!);
 
                 var (distance, duration) = await _routeService.GetRoute(warehouseLat, warehouseLng, lat, lng);
+
                 var order = new Order
                 {
                     OrderNumber = $"ORD-{DateTime.UtcNow.Ticks}",
@@ -125,7 +128,6 @@ namespace asp_backend.Controllers
 
                     order.OrderProducts.Add(orderProduct);
 
-                    // 🔥 Deduct stock
                     product.StockQuantity -= item.Quantity;
                 }
 
@@ -170,7 +172,7 @@ namespace asp_backend.Controllers
                     CreatedAt = order.CreatedAt
                 };
 
-                return Ok(result);
+                return StatusCode(StatusCodes.Status201Created, result);
             }
             catch
             {
@@ -180,6 +182,7 @@ namespace asp_backend.Controllers
         }
 
         [HttpGet("reverse-geocode")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> ReverseGeocode(double lat, double lng)
         {
             var address = await _routeService.ReverseGeocode(lat, lng);
@@ -187,6 +190,8 @@ namespace asp_backend.Controllers
         }
 
         [HttpGet("warehouse-location")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetWarehouseLocation()
         {
             if (!double.TryParse(_config["Warehouse:Latitude"], out var lat) ||
@@ -198,7 +203,9 @@ namespace asp_backend.Controllers
             return Ok(new { lat, lng });
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetOrders()
         {
             var orders = await _context.Orders
@@ -207,7 +214,7 @@ namespace asp_backend.Controllers
                 .Include(o => o.AssignedStaff)
                 .ToListAsync();
 
-            var result = orders.Select(o => new
+            var result = orders.OrderByDescending(d => d.CreatedAt).Select(o => new
             {
                 Id = o.Id,
                 OrderNumber = o.OrderNumber,
@@ -246,6 +253,9 @@ namespace asp_backend.Controllers
         }
 
         [HttpGet("{orderNumber}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetOrderByOrderNumber(string orderNumber)
         {
             if (string.IsNullOrWhiteSpace(orderNumber))
@@ -290,6 +300,7 @@ namespace asp_backend.Controllers
                 TotalAmount = order.TotalAmount,
                 PriorityLevel = order.PriorityLevel,
                 Status = order.Status.ToString(),
+                Notes = order.Notes,
                 EstimatedDelivery = order.EstimatedDelivery,
                 CreatedAt = order.CreatedAt
             };
@@ -297,10 +308,13 @@ namespace asp_backend.Controllers
             return Ok(response);
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateOrder(int id, UpdateOrderDto dto)
         {
-            // Start a transaction
             await using var transaction = await _context.Database.BeginTransactionAsync();
 
             try
@@ -319,7 +333,6 @@ namespace asp_backend.Controllers
                 if (order.Status == OrderStatus.Delivered)
                     return BadRequest("Delivered orders cannot be modified.");
 
-                // Validate assigned staff if provided
                 if (!string.IsNullOrWhiteSpace(dto.AssignedStaffId))
                 {
                     var staff = await _userManager.FindByIdAsync(dto.AssignedStaffId);
@@ -336,7 +349,6 @@ namespace asp_backend.Controllers
                     order.AssignedStaffId = staff.Id;
                 }
 
-                // Update basic order fields
                 var oldAddress = order.CustomerAddress;
                 order.CustomerName = dto.CustomerName;
                 order.CustomerEmail = dto.CustomerEmail;
@@ -381,7 +393,6 @@ namespace asp_backend.Controllers
                     order.DurationMinutes = duration;
                 }
 
-                // Handle products & stock
                 if (dto.Products != null)
                 {
                     var existingOrderProducts = order.OrderProducts.ToList();
@@ -397,7 +408,6 @@ namespace asp_backend.Controllers
 
                         if (existingItem != null)
                         {
-                            // Quantity difference
                             int difference = dtoItem.Quantity - existingItem.Quantity;
 
                             if (difference > 0)
@@ -418,7 +428,6 @@ namespace asp_backend.Controllers
                         }
                         else
                         {
-                            // New product added
                             if (product.StockQuantity < dtoItem.Quantity)
                                 return BadRequest($"Insufficient stock for {product.Name}");
 
@@ -435,7 +444,6 @@ namespace asp_backend.Controllers
                         }
                     }
 
-                    // Remove products that are not in DTO
                     var dtoProductIds = dto.Products.Select(p => p.ProductId).ToList();
                     var removedProducts = existingOrderProducts
                         .Where(op => !dtoProductIds.Contains(op.ProductId))
@@ -444,18 +452,18 @@ namespace asp_backend.Controllers
                     foreach (var removed in removedProducts)
                     {
                         var product = await _context.Products.FindAsync(removed.ProductId);
-                        product?.StockQuantity += removed.Quantity;
+                        if (product != null)
+                        {
+                            product.StockQuantity += removed.Quantity;
+                        }
 
                         _context.OrderProducts.Remove(removed);
                     }
 
-                    // Recalculate total
                     order.TotalAmount = order.OrderProducts.Sum(op => op.Quantity * op.Product.Price);
                 }
 
                 await _context.SaveChangesAsync();
-
-                // Commit transaction
                 await transaction.CommitAsync();
 
                 return Ok(new
@@ -468,26 +476,32 @@ namespace asp_backend.Controllers
             }
             catch (Exception ex)
             {
-                // Rollback on error
                 await transaction.RollbackAsync();
                 return BadRequest($"Error updating order: {ex.Message}");
             }
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteOrder(int id)
         {
-            var order = await _context.Orders
-                .FindAsync(id);
-            if (order == null) return NotFound(new { message = "Order not exist." });
+            var order = await _context.Orders.FindAsync(id);
+            if (order == null)
+                return NotFound(new { message = "Order not exist." });
 
             _context.Orders.Remove(order);
             await _context.SaveChangesAsync();
+
             return Ok(new { message = "Order deleted successfully" });
         }
 
-        //[Authorize(Roles = "Admin,Warehouse,Delivery")]
+        //[Authorize(Policy = "AdminOnly")]
         [HttpPatch("{orderNumber}/status")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateOrderStatus(string orderNumber, UpdateOrderStatusDto dto)
         {
             var order = await _context.Orders
@@ -496,7 +510,6 @@ namespace asp_backend.Controllers
             if (order == null)
                 return NotFound("Order not found.");
 
-            // 🚫 Prevent invalid transitions (example)
             if (order.Status == OrderStatus.Delivered)
                 return BadRequest("Delivered orders cannot be modified.");
 
@@ -506,6 +519,5 @@ namespace asp_backend.Controllers
 
             return Ok(new { message = "Order status updated successfully." });
         }
-
     }
 }

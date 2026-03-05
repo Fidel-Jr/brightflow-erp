@@ -565,6 +565,10 @@ namespace asp_backend.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("location_id");
 
+                    b.Property<DateTime?>("LastRestocked")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_restocked");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text")

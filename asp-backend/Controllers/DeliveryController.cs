@@ -3,7 +3,7 @@ using asp_backend.DTOs;
 using asp_backend.Models;
 using asp_backend.Models.Enums;
 using asp_backend.Services;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,21 +19,23 @@ namespace asp_backend.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly DeliveryService _deliveryService;
 
-        public DeliveryController(AppDbContext context, UserManager<ApplicationUser> userManager, DeliveryService deliveryService)
+        public DeliveryController(
+            AppDbContext context,
+            UserManager<ApplicationUser> userManager,
+            DeliveryService deliveryService)
         {
             _context = context;
             _userManager = userManager;
             _deliveryService = deliveryService;
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> CreateDelivery([FromBody] DeliveryDto dto)
         {
-            if (dto == null)
-            {
-                return BadRequest(new { message = "Request body is required" });
-            }
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(new
@@ -59,10 +61,10 @@ namespace asp_backend.Controllers
                 return BadRequest(new { message = "Delivered orders cannot be modified" });
             }
 
-            string dNumber = await _deliveryService.GenerateDeliveryNumberAsync();
+            string deliveryNumber = await _deliveryService.GenerateDeliveryNumberAsync();
             var delivery = new Delivery
             {
-                DeliveryNumber = dNumber,
+                DeliveryNumber = deliveryNumber,
                 OrderId = dto.OrderId,
                 Notes = dto.Notes,
             };
@@ -73,27 +75,28 @@ namespace asp_backend.Controllers
             {
                 _context.Deliveries.Add(delivery);
 
-                // Keep Orders table in sync with delivery lifecycle
                 order.Status = OrderStatus.ForDelivery;
                 order.UpdatedAt = DateTime.UtcNow;
 
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
+
+                return StatusCode(StatusCodes.Status201Created,
+                new { message = "Delivery created successfully", deliveryId = delivery.Id });
             }
             catch
             {
                 await transaction.RollbackAsync();
                 throw;
             }
-            return Ok(new { message = "Delivery created successfully", deliveryId = delivery.Id });
+            
         }
 
-
-
+        [Authorize(Policy = "ManagerOnly")]
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetDeliveries()
         {
-            
             var deliveries = await _context.Deliveries
                 .Include(d => d.Order)
                 .Include(d => d.Driver)
@@ -139,18 +142,19 @@ namespace asp_backend.Controllers
                     d.CreatedAt,
                     d.UpdatedDate
                 })
+                .OrderByDescending(d=>d.CreatedAt)
                 .ToListAsync();
+
             return Ok(deliveries);
         }
 
+        [Authorize(Policy = "ManagerOnly")]
         [HttpPatch("{deliveryId}/status")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateDeliveryStatus(int deliveryId, [FromBody] UpdateDeliveryStatusDto dto)
         {
-            if (dto == null)
-            {
-                return BadRequest(new { message = "Request body is required" });
-            }
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(new
@@ -165,15 +169,15 @@ namespace asp_backend.Controllers
                 });
             }
 
-            var existingDelivery = await _context.Deliveries
+            var delivery = await _context.Deliveries
                 .FirstOrDefaultAsync(d => d.Id == deliveryId);
 
-            if (existingDelivery == null)
+            if (delivery == null)
             {
                 return NotFound(new { message = "Delivery not found" });
             }
 
-            var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == existingDelivery.OrderId);
+            var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == delivery.OrderId);
             if (order == null)
             {
                 return NotFound(new { message = "Order not found" });
@@ -205,27 +209,27 @@ namespace asp_backend.Controllers
                 return BadRequest(new { message = "Invalid status" });
             }
 
-            if (existingDelivery.Status == DeliveryStatus.Delivered && newStatus.Value != DeliveryStatus.Delivered)
+            if (delivery.Status == DeliveryStatus.Delivered && newStatus.Value != DeliveryStatus.Delivered)
             {
                 return BadRequest(new { message = "Delivered deliveries cannot be modified" });
             }
 
-            if (existingDelivery.Status == DeliveryStatus.Delivered && newStatus.Value == DeliveryStatus.Delivered)
+            if (delivery.Status == DeliveryStatus.Delivered && newStatus.Value == DeliveryStatus.Delivered)
             {
                 return Ok(new { message = "Delivery status updated successfully" });
             }
 
-            // Basic consistency checks
-            if ((newStatus == DeliveryStatus.Assigned || newStatus == DeliveryStatus.In_Transit || newStatus == DeliveryStatus.Delivered)
-                && string.IsNullOrWhiteSpace(existingDelivery.DriverId))
+            if ((newStatus == DeliveryStatus.Assigned ||
+                 newStatus == DeliveryStatus.In_Transit ||
+                 newStatus == DeliveryStatus.Delivered) &&
+                string.IsNullOrWhiteSpace(delivery.DriverId))
             {
                 return BadRequest(new { message = "Assign a driver before setting this status" });
             }
 
-            existingDelivery.Status = newStatus.Value;
-            existingDelivery.UpdatedDate = DateTime.UtcNow;
+            delivery.Status = newStatus.Value;
+            delivery.UpdatedDate = DateTime.UtcNow;
 
-            // Keep order status in sync
             order.Status = newStatus.Value switch
             {
                 DeliveryStatus.Pending => OrderStatus.ForDelivery,
@@ -242,7 +246,11 @@ namespace asp_backend.Controllers
             return Ok(new { message = "Delivery status updated successfully" });
         }
 
+        [Authorize(Policy = "ManagerOnly")]
         [HttpPut("{deliveryId}/assign-driver")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> AssignDriver(int deliveryId, [FromBody] UpdateDeliveryDto dto)
         {
             if (!ModelState.IsValid)
@@ -259,15 +267,15 @@ namespace asp_backend.Controllers
                 });
             }
 
-            var existingDelivery = await _context.Deliveries
+            var delivery = await _context.Deliveries
                 .FirstOrDefaultAsync(d => d.Id == deliveryId);
 
-            if (existingDelivery == null)
+            if (delivery == null)
             {
                 return NotFound(new { message = "Delivery not found" });
             }
 
-            if (existingDelivery.Status == DeliveryStatus.Delivered)
+            if (delivery.Status == DeliveryStatus.Delivered)
             {
                 return BadRequest(new { message = "Delivered deliveries cannot be modified" });
             }
@@ -278,19 +286,7 @@ namespace asp_backend.Controllers
                 return BadRequest(new { message = "Driver not found" });
             }
 
-            // Assign driver
-            existingDelivery.DriverId = dto.DriverId;  // make sure this is nullable if driver can be null
-            existingDelivery.Status = DeliveryStatus.Assigned;
-            existingDelivery.ScheduledDate = dto.ScheduledDate;
-            existingDelivery.ScheduledTime = dto.ScheduledTime;
-            existingDelivery.UpdatedDate = DateTime.UtcNow;
-
-            if(dto.Notes !=  null)
-            {
-                existingDelivery.Notes = dto.Notes;
-            }
-
-            var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == existingDelivery.OrderId);
+            var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == delivery.OrderId);
             if (order == null)
             {
                 return NotFound(new { message = "Order not found" });
@@ -299,6 +295,17 @@ namespace asp_backend.Controllers
             if (order.Status == OrderStatus.Delivered)
             {
                 return BadRequest(new { message = "Delivered orders cannot be modified" });
+            }
+
+            delivery.DriverId = dto.DriverId;
+            delivery.Status = DeliveryStatus.Assigned;
+            delivery.ScheduledDate = dto.ScheduledDate;
+            delivery.ScheduledTime = dto.ScheduledTime;
+            delivery.UpdatedDate = DateTime.UtcNow;
+
+            if (dto.Notes != null)
+            {
+                delivery.Notes = dto.Notes;
             }
 
             order.Status = OrderStatus.Assigned;
@@ -307,31 +314,34 @@ namespace asp_backend.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Driver assigned successfully" });
-
         }
 
+        [Authorize(Policy = "ManagerOnly")]
         [HttpPut("{deliveryId}/unassign-driver")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UnassignDriver(int deliveryId)
         {
-            var existingDelivery = await _context.Deliveries
+            var delivery = await _context.Deliveries
                 .FirstOrDefaultAsync(d => d.Id == deliveryId);
 
-            if (existingDelivery == null)
+            if (delivery == null)
             {
                 return NotFound(new { message = "Delivery not found" });
             }
 
-            if (existingDelivery.Status == DeliveryStatus.Delivered)
+            if (delivery.Status == DeliveryStatus.Delivered)
             {
                 return BadRequest(new { message = "Delivered deliveries cannot be modified" });
             }
 
-            if (string.IsNullOrWhiteSpace(existingDelivery.DriverId))
+            if (string.IsNullOrWhiteSpace(delivery.DriverId))
             {
                 return BadRequest(new { message = "Delivery has no assigned driver" });
             }
 
-            var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == existingDelivery.OrderId);
+            var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == delivery.OrderId);
             if (order == null)
             {
                 return NotFound(new { message = "Order not found" });
@@ -342,13 +352,12 @@ namespace asp_backend.Controllers
                 return BadRequest(new { message = "Delivered orders cannot be modified" });
             }
 
-            existingDelivery.DriverId = null;
-            existingDelivery.Status = DeliveryStatus.Pending;
-            existingDelivery.ScheduledDate = null;
-            existingDelivery.ScheduledTime = null;
-            existingDelivery.UpdatedDate = DateTime.UtcNow;
+            delivery.DriverId = null;
+            delivery.Status = DeliveryStatus.Pending;
+            delivery.ScheduledDate = null;
+            delivery.ScheduledTime = null;
+            delivery.UpdatedDate = DateTime.UtcNow;
 
-            // Revert order back to "ForDelivery" (delivery exists but no driver assigned)
             order.Status = OrderStatus.ForDelivery;
             order.UpdatedAt = DateTime.UtcNow;
 
@@ -356,6 +365,5 @@ namespace asp_backend.Controllers
 
             return Ok(new { message = "Driver unassigned successfully" });
         }
-
     }
 }
