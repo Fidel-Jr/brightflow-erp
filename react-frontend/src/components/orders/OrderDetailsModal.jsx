@@ -298,7 +298,14 @@ const OrderDetailsModal = ({ show, order, onHide, onEdit, onStatusUpdate }) => {
         <Button variant="secondary" onClick={onHide}>
           Close
         </Button>
-        {typeof onEdit === 'function' && (
+
+        {typeof onEdit === 'function' &&
+          !['fordelivery'].includes(
+            String(order?.status ?? '')
+              .replace(/\s+/g, '')
+              .replace(/_/g, '')
+              .toLowerCase()
+          ) && (
           <Button variant="primary" onClick={() => onEdit(order)}>
             <i className="bi bi-pencil me-2"></i>
             Edit Order
